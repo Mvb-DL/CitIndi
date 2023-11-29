@@ -1,0 +1,280 @@
+package be.mariovonbassen.citindi.ui.screens.authenticated
+
+import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import be.mariovonbassen.citindi.ui.theme.blueAppColor
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.*
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import be.mariovonbassen.citindi.ui.components.Header
+import be.mariovonbassen.citindi.ui.states.AddCityState
+import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
+
+
+@Composable
+fun AddCityScreen(viewmodel : AddCityViewModel = viewModel(), navController: NavController, currentRoute : String) {
+
+    val state by viewmodel.state.collectAsState()
+
+    Surface(
+        modifier = Modifier
+            .alpha(state.surfaceOpacity)
+    ) {
+
+        ExistingCityDisplay(navController=navController, currentRoute=currentRoute)
+
+        AddCityForm(state = state)
+
+    }
+}
+
+@Composable
+fun ExistingCityDisplay(navController: NavController, currentRoute : String){
+
+    Box(
+        modifier = Modifier
+    ) {
+
+        Column(
+            modifier = Modifier
+                .background(color = Color.White)
+                .fillMaxHeight(0.3f)
+                .fillMaxWidth()
+        ) {
+
+            Header(navController = navController, currentRoute=currentRoute)
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(text = "Existing Cities")
+
+        }
+    }
+}
+
+
+@Composable
+fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState) {
+
+    Column(
+        modifier = Modifier.padding(20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        TextField(
+            label = { Text(text = "City Name") },
+            value = state.cityName,
+            onValueChange = {
+                viewmodel.setCityName(it)
+            })
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        DateFields(state=state)
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        ImageUploadField()
+
+        Spacer(modifier = Modifier.height(20.dp))
+        
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(0.35f)
+                .fillMaxHeight(0.08f),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+            onClick = {}) {
+                    
+            Text(text = "Add City", color = Color.Black)
+        }
+    }
+
+}
+
+
+@Composable
+fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
+
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(1f),
+        verticalAlignment = Alignment.CenterVertically
+        ) {
+
+        TextField(
+                label = { Text(text = "Add Arrival date") },
+                value = "",
+                onValueChange = { })
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        IconButton(onClick = {
+                viewmodel.openDateField()
+                viewmodel.setOpacity()
+        }) {
+            Icon(
+                    Icons.Rounded.DateRange,
+                    contentDescription = "date change",
+                    tint  = Color.Black,
+                    modifier = Modifier
+                        .size(35.dp)
+                )
+            }
+
+        if (state.openDateField){
+                DatePickerField()
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerField(viewmodel : AddCityViewModel = viewModel()) {
+
+    Dialog(onDismissRequest = { }) {
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .fillMaxHeight(0.8f)
+                .padding(5.dp),
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                ),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+
+                    // Pre-select a date for January 4, 2020
+                    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = 1578096000000)
+                    DatePicker(state = datePickerState, modifier = Modifier.padding(16.dp))
+
+                    Text("Selected date timestamp: ${datePickerState.selectedDateMillis ?: "no selection"}")
+
+                    Button(onClick = {
+                        viewmodel.resetOpacity()
+                        viewmodel.closeDateField()
+                    }) {
+                        Text(text = "Add Date")
+                    }
+                }
+        }
+
+    }
+}
+
+
+@Composable
+fun ImageUploadField(){
+
+    //The URI of the photo that the user has picked
+    var photoUri: Uri? by remember { mutableStateOf(null) }
+
+    //The launcher we will use for the PickVisualMedia contract.
+    //When .launch()ed, this will display the photo picker.
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        //When the user has selected a photo, its URI is returned here
+        photoUri = uri
+    }
+
+    Column {
+
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = Color.LightGray,
+            ),
+            modifier = Modifier
+                .padding(20.dp),
+        ) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                onClick = {
+                    //On button press, launch the photo picker
+                    launcher.launch(
+                        PickVisualMediaRequest(
+                            //Here we request only photos. Change this to .ImageAndVideo if you want videos too.
+                            //Or use .VideoOnly if you only want videos.
+                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
+                    )
+                }
+            ) {
+                Text("Select Photo", color = Color.Black, fontSize = 20.sp)
+            }
+
+        }
+
+        if (photoUri != null) {
+            //Use Coil to display the selected image
+            val painter = rememberAsyncImagePainter(
+                ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(data = photoUri)
+                    .build()
+            )
+
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .border(6.0.dp, Color.Gray),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+
