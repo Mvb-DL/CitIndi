@@ -47,6 +47,7 @@ fun ProfileScreen(navController: NavController, currentRoute: String){
 
         Box(
             modifier = Modifier
+                .padding(0.dp, 30.dp)
         ) {
             ProfileDataDisplay()
         }
@@ -67,9 +68,8 @@ fun ProfileDataDisplay(){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(0.dp, 30.dp)
     ) {
-        Text(text = "Hey")
+        //Text(text = "Hey")
     }
     
 }
@@ -117,7 +117,7 @@ fun ProfileButton(navController: NavController) {
 
         Spacer(
             modifier = Modifier
-                .height(15.dp)
+                .height(25.dp)
         )
 
         Row(

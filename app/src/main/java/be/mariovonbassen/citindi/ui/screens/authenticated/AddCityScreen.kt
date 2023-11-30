@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -66,49 +67,70 @@ fun AddCityScreen(viewmodel : AddCityViewModel = viewModel(), navController: Nav
             .alpha(state.surfaceOpacity)
     ) {
 
-        ExistingCityDisplay(navController=navController, currentRoute=currentRoute)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
 
-        AddCityForm(state = state)
+            Box(){
 
+                Header(navController = navController, currentRoute=currentRoute)
+
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Box(
+                modifier = Modifier
+            ) {
+
+                ExistingCityDisplay()
+
+            }
+
+            Spacer(modifier = Modifier.height(200.dp))
+
+            Box(
+                modifier = Modifier
+            ) {
+
+                AddCityForm(state = state)
+
+            }
+        }
     }
 }
 
 @Composable
-fun ExistingCityDisplay(navController: NavController, currentRoute : String){
-
-    Box(
-        modifier = Modifier
-    ) {
+fun ExistingCityDisplay(){
 
         Column(
             modifier = Modifier
                 .background(color = Color.White)
-                .fillMaxHeight(0.3f)
                 .fillMaxWidth()
         ) {
 
-            Header(navController = navController, currentRoute=currentRoute)
-
-            Spacer(modifier = Modifier.height(20.dp))
-
             Text(text = "Existing Cities")
-
         }
-    }
 }
 
 
 @Composable
 fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState) {
 
+    val color = Color(android.graphics.Color.parseColor(blueAppColor))
+
     Column(
-        modifier = Modifier.padding(20.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         TextField(
             label = { Text(text = "City Name") },
+            modifier = Modifier
+                .width(250.dp),
             value = state.cityName,
             onValueChange = {
                 viewmodel.setCityName(it)
@@ -126,12 +148,12 @@ fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState)
         
         Button(
             modifier = Modifier
-                .fillMaxWidth(0.35f)
-                .fillMaxHeight(0.08f),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                .height(40.dp)
+                .width(170.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = color),
             onClick = {}) {
                     
-            Text(text = "Add City", color = Color.Black)
+            Text(text = "Add City", color = Color.White, fontSize = 20.sp)
         }
     }
 
@@ -143,12 +165,13 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
 
     Row(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(1f),
+            .width(250.dp),
         verticalAlignment = Alignment.CenterVertically
         ) {
 
         TextField(
+            modifier = Modifier
+                .width(200.dp),
                 label = { Text(text = "Add Arrival date") },
                 value = "",
                 onValueChange = { })
@@ -160,7 +183,7 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
                 viewmodel.setOpacity()
         }) {
             Icon(
-                    Icons.Rounded.DateRange,
+                    Icons.Outlined.DateRange,
                     contentDescription = "date change",
                     tint  = Color.Black,
                     modifier = Modifier
@@ -169,7 +192,9 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
             }
 
         if (state.openDateField){
+
                 DatePickerField()
+
         }
     }
 }
@@ -225,14 +250,16 @@ fun ImageUploadField(){
         photoUri = uri
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .width(250.dp)
+    ) {
 
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = Color.LightGray,
             ),
-            modifier = Modifier
-                .padding(20.dp),
+
         ) {
             Button(
                 modifier = Modifier
