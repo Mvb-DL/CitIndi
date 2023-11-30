@@ -50,7 +50,8 @@ fun Header(viewmodel : HeaderViewModel = viewModel(), navController: NavControll
 
     Row (
         modifier = Modifier
-            .fillMaxWidth() ,
+            .fillMaxWidth()
+            .padding(5.dp, 5.dp, 5.dp, 0.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -71,13 +72,18 @@ fun Header(viewmodel : HeaderViewModel = viewModel(), navController: NavControll
         }) {
 
             Column {
-                Icon(
-                    Icons.Rounded.Settings,
-                    contentDescription = "settings",
-                    tint  = color,
-                    modifier = Modifier
-                        .size(40.dp)
-                )
+
+                if (currentRoute != "Settings") {
+
+                    Icon(
+                        Icons.Rounded.Settings,
+                        contentDescription = "settings",
+                        tint = color,
+                        modifier = Modifier
+                            .size(40.dp)
+                    )
+
+                }
             }
         }
 

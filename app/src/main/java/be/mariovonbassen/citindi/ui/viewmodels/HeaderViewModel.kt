@@ -1,5 +1,6 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination

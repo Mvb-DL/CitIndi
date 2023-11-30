@@ -47,7 +47,6 @@ fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
         // Registration
         composable(route = NavigationRoutes.Unauthenticated.SignUpScreen.route) {
 
-
             SignUpScreen(
 
                 onNavigateBack = {

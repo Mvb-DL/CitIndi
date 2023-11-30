@@ -43,12 +43,12 @@ class LoginViewModel(
 
             is LoginUserEvent.ConfirmLogin -> {
 
-                val inputsValidated = validateLoginInputs()
+                //val inputsValidated = validateLoginInputs()
 
-                if (inputsValidated) {
+                //if (inputsValidated) {
                     _state.update {
                         it.copy(isLoginSuccessful = true)
-                    }
+                //    }
                 }
 
                 //userRepository.getUserStream()
