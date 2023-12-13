@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val blueAppColor = "#3E3BEC"
 val grayShade = "#F4F7FE"
+val lightGray = "#E0E0E0"
+val alarmRed = "#F74343"

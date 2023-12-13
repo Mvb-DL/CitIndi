@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import be.mariovonbassen.citindi.navigation.CitIndiApp
 import be.mariovonbassen.citindi.ui.theme.CitIndiTheme
 
-class MainActivity : ComponentActivity() {
 
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +28,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+
     }
 
 }

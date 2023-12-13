@@ -1,11 +1,8 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.User
@@ -29,7 +26,7 @@ class SignUpViewModel(
     private val _errorState = MutableStateFlow(RegistrationErrorState())
     val errorState: StateFlow<RegistrationErrorState> = _errorState.asStateFlow()
 
-    //val allEntries: Flow<List<User>> = userRepository.getAllUsers()
+    val allEntries: Flow<List<User>> = userRepository.getAllUsers()
 
     fun onUserEvent(event: SignUpUserEvent) {
 
@@ -54,7 +51,6 @@ class SignUpViewModel(
                 ) }
             }
 
-
             is SignUpUserEvent.ConfirmSignUp -> {
 
                 val inputsValidated = validateSignUpInputs()
@@ -74,6 +70,7 @@ class SignUpViewModel(
                 val inputsValidated = validateSignUpInputs()
 
                 if (inputsValidated) {
+
                     _state.update {
                         it.copy(isRegistrationSuccessful = true)
                     }
@@ -87,11 +84,11 @@ class SignUpViewModel(
                        userRepository.upsertUser(user)
                     }
 
-                   _state.update { it.copy(
+                  /* _state.update { it.copy(
                         userName = "",
                         userPassword = "",
                         userPasswordConfirm = ""
-                    ) }
+                    ) }*/
 
                 }
 

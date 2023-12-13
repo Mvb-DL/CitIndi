@@ -10,7 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
+import be.mariovonbassen.citindi.ui.provideLoginViewModel
+import be.mariovonbassen.citindi.ui.provideSignUpViewModel
+import be.mariovonbassen.citindi.ui.theme.alarmRed
+import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 import kotlinx.coroutines.delay
@@ -18,27 +26,37 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun AlertMessage(alertText: String, viewmodelSignUp : SignUpViewModel = viewModel(), viewmodelLogin : LoginViewModel = viewModel() ) {
+fun AlertMessage(alertText: String) {
+
+    val color = Color(android.graphics.Color.parseColor(alarmRed))
+
+    val context = LocalContext.current
+    val yourDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(yourDao)
+    val viewModelFactory = MainViewModelFactory(repository)
+
+    val loginViewmodel = provideLoginViewModel(viewModelFactory)
+    val signupViewmodel = provideSignUpViewModel(viewModelFactory)
 
     val showDialog by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
 
         AlertDialog(
+            containerColor = color,
             onDismissRequest = {},
             title = {
-                Text(alertText)
+                Text(alertText, color= Color.White, fontWeight = FontWeight.SemiBold)
             },
             confirmButton = {},
             modifier = Modifier
-                .background(Color.Red)
         )
 
         LaunchedEffect(showDialog) {
             coroutineScope.launch {
                 delay(2000)
                 //TODO
-                viewmodelSignUp.resetError()
-                viewmodelLogin.resetError()
+                loginViewmodel.resetError()
+                signupViewmodel.resetError()
             }
         }
 }

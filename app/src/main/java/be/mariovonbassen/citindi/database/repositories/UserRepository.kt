@@ -24,4 +24,6 @@ interface UserRepository {
      */
     suspend fun deleteUser(user: User)
 
+    suspend fun checkUserPresence(password: String, userName: String): Boolean
+
 }

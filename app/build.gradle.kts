@@ -11,6 +11,7 @@ android {
     defaultConfig {
         applicationId = "be.mariovonbassen.citindi"
         minSdk = 34
+        //noinspection EditedTargetSdkVersion
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -29,6 +30,7 @@ android {
                 "proguard-rules.pro"
             )
         }
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -48,14 +50,19 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
 
 dependencies {
 
     val room_version = "2.6.0"
 
+    //noinspection GradleDependency
     implementation("androidx.room:room-runtime:$room_version")
+    //noinspection GradleDependency
     ksp("androidx.room:room-compiler:$room_version")
+    //noinspection GradleDependency
     implementation("androidx.room:room-ktx:$room_version")
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -78,4 +85,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.navigation:navigation-compose:2.7.5")
+
 }

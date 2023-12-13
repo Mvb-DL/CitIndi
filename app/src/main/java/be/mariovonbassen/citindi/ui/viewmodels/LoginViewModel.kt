@@ -1,7 +1,10 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.LoginUserEvent
+import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.components.ErrorType
 import be.mariovonbassen.citindi.ui.states.LoginErrorState
 import be.mariovonbassen.citindi.ui.states.LoginState
@@ -9,9 +12,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
-
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -43,16 +47,41 @@ class LoginViewModel(
 
             is LoginUserEvent.ConfirmLogin -> {
 
-                //val inputsValidated = validateLoginInputs()
+                val inputsValidated = validateLoginInputs()
 
-                //if (inputsValidated) {
-                    _state.update {
-                        it.copy(isLoginSuccessful = true)
-                //    }
+                if (inputsValidated) {
+
+                        viewModelScope.launch {
+
+                            val userExist = userRepository.checkUserPresence(
+                                state.value.userPassword,
+                                state.value.userName)
+
+                            if (userExist) {
+
+                                _state.update {
+                                    it.copy(isLoginSuccessful = true)
+                                }
+
+                            }else {
+
+                                _state.update {
+                                        it.copy(isLoginSuccessful = false)
+                                }
+
+                                _errorState.update {
+                                    it.copy(
+                                        isError = true,
+                                        errorMessage = "Password or Username wrong!"
+                                    )
+                                }
+
+                            }
+                        }
                 }
 
-                //userRepository.getUserStream()
             }
+
 
         }
     }

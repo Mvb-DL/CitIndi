@@ -2,10 +2,14 @@ package be.mariovonbassen.citindi.navigation
 
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import be.mariovonbassen.citindi.database.repositories.UserRepository
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.screens.authenticated.AddCityScreen
 import be.mariovonbassen.citindi.ui.screens.authenticated.MainDashBoardScreen
 import be.mariovonbassen.citindi.ui.screens.authenticated.ProfileScreen

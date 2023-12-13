@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,18 +33,26 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
-import be.mariovonbassen.citindi.ui.AppViewModelProvider
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
+import be.mariovonbassen.citindi.ui.provideSignUpViewModel
 import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
-import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 
 @Composable
-fun SignUpScreen(viewmodel : SignUpViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                 onNavigateBack: () -> Unit,
-                 onNavigateToLogin: () -> Unit,
-                 onNavigateToAuthenticatedRoute: () -> Unit,
+fun SignUpScreen(
+    onNavigateBack: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToAuthenticatedRoute: () -> Unit,
                  ) {
+
+    val context = LocalContext.current
+    val yourDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(yourDao)
+    val viewModelFactory = MainViewModelFactory(repository)
+    val viewmodel = provideSignUpViewModel(viewModelFactory)
 
     val state by viewmodel.state.collectAsState()
     val errorstate by viewmodel.errorState.collectAsState()

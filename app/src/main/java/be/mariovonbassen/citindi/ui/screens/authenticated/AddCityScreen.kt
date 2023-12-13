@@ -54,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.ui.components.Header
 import be.mariovonbassen.citindi.ui.states.AddCityState
+import be.mariovonbassen.citindi.ui.theme.lightGray
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
 
 
@@ -196,6 +197,7 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
                 DatePickerField()
 
         }
+
     }
 }
 
@@ -240,6 +242,9 @@ fun DatePickerField(viewmodel : AddCityViewModel = viewModel()) {
 @Composable
 fun ImageUploadField(){
 
+    val color = Color(android.graphics.Color.parseColor(lightGray))
+
+
     //The URI of the photo that the user has picked
     var photoUri: Uri? by remember { mutableStateOf(null) }
 
@@ -257,7 +262,7 @@ fun ImageUploadField(){
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color.LightGray,
+                containerColor = color
             ),
 
         ) {
@@ -265,7 +270,7 @@ fun ImageUploadField(){
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                colors = ButtonDefaults.buttonColors(containerColor = color),
                 onClick = {
                     //On button press, launch the photo picker
                     launcher.launch(

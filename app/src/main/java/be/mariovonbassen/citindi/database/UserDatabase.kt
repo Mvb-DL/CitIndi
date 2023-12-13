@@ -1,17 +1,33 @@
 package be.mariovonbassen.citindi.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import be.mariovonbassen.citindi.database.dao.UserDao
 import be.mariovonbassen.citindi.models.User
 
 
-@Database(entities = [User::class], version = 2)
+@Database(
+    entities = [User::class],
+    version = 2,
+   /* autoMigrations = [
+        AutoMigration (
+            from = 1,
+            to = 2,
+            spec = UserDatabase.UserDatabaseAutoMigration::class
+        )
+    ]*/
+)
+
 abstract class UserDatabase : RoomDatabase() {
+
+
+   // class UserDatabaseAutoMigration: AutoMigrationSpec {   }
 
     abstract fun userDao(): UserDao
 
