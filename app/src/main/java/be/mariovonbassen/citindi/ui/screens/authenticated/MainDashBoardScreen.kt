@@ -1,6 +1,6 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,24 +14,38 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Footer
+import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
+import be.mariovonbassen.citindi.ui.states.ActiveUserState
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.theme.grayShade
+import kotlinx.coroutines.flow.StateFlow
 
 
 @Composable
 fun MainDashBoardScreen(navController: NavController) {
+
+    val context = LocalContext.current
+    val yourDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(yourDao)
+    val viewModelFactory = MainViewModelFactory(repository)
+    val viewmodel = provideMainDashBoardViewModel(viewModelFactory)
+
+    val state = viewmodel.globalActiveUserState
 
     Scaffold(
 
@@ -53,7 +67,7 @@ fun MainDashBoardScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                ToDoDisplay()
+                ToDoDisplay(state = state)
 
                 Spacer(modifier = Modifier.height(26.dp))
 
@@ -121,18 +135,23 @@ fun DashboardData() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ToDoDisplay() {
+fun ToDoDisplay(state: StateFlow<ActiveUserState>) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-    ) {
+Column (
 
-        Text(text = "Plan of the day...", fontSize = 22.sp)
+) {
+    Row {
+        Text(text = "Hey ${state.value.activeUser?.userName}", fontSize = 22.sp)
 
     }
+    Row {
+        Text(text = "your plan of the day...", fontSize = 16.sp)
+    }
+
+}
+
 }
 
 @Composable

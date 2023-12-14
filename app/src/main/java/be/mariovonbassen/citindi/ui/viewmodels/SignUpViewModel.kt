@@ -9,6 +9,7 @@ import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.ui.components.ErrorType
 import be.mariovonbassen.citindi.ui.states.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
 import be.mariovonbassen.citindi.ui.states.RegistrationErrorState
 import be.mariovonbassen.citindi.ui.states.SignUpState
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,8 @@ class SignUpViewModel(
 
     private val _errorState = MutableStateFlow(RegistrationErrorState())
     val errorState: StateFlow<RegistrationErrorState> = _errorState.asStateFlow()
+
+    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
 
 
     fun onUserEvent(event: SignUpUserEvent) {
@@ -81,6 +84,9 @@ class SignUpViewModel(
                         password = userPassword,
                     )
 
+                    val updatedState = ActiveUserState(activeUser= user, isActive = true)
+
+                    GlobalActiveUserState.updateAppState(updatedState)
 
                     viewModelScope.launch {
                        userRepository.upsertUser(user)

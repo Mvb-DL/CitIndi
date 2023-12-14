@@ -75,10 +75,16 @@ fun ProfileScreen(navController: NavController, currentRoute: String
 
         Box(
             modifier = Modifier
-                .padding(0.dp, 30.dp)
+                .padding(50.dp, 100.dp)
         ) {
 
-          Text(text = "${state.value.activeUser?.userName}")
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "User ${state.value.activeUser?.userName}", fontSize = 35.sp)
+            }
+
 
         }
 

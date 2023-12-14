@@ -8,6 +8,7 @@ import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
+import be.mariovonbassen.citindi.ui.viewmodels.MainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.ProfileViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 
@@ -25,6 +26,9 @@ class MainViewModelFactory(private val userRepository: UserRepository): ViewMode
         } else if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
 
             return ProfileViewModel(userRepository) as T
+        }else if (modelClass.isAssignableFrom(MainDashBoardViewModel::class.java)) {
+
+            return MainDashBoardViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -45,6 +49,12 @@ fun provideLoginViewModel(viewModelFactory: MainViewModelFactory): LoginViewMode
 @Composable
 fun provideProfileViewModel(viewModelFactory: MainViewModelFactory): ProfileViewModel {
     val viewModel: ProfileViewModel = viewModel(factory = viewModelFactory)
+    return viewModel
+}
+
+@Composable
+fun provideMainDashBoardViewModel(viewModelFactory: MainViewModelFactory): MainDashBoardViewModel {
+    val viewModel: MainDashBoardViewModel = viewModel(factory = viewModelFactory)
     return viewModel
 }
 
