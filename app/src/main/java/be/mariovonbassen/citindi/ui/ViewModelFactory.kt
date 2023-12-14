@@ -4,9 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import be.mariovonbassen.citindi.database.UserDatabase
-import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
+import be.mariovonbassen.citindi.ui.viewmodels.ChangeAccountViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.MainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.ProfileViewModel
@@ -29,6 +28,9 @@ class MainViewModelFactory(private val userRepository: UserRepository): ViewMode
         }else if (modelClass.isAssignableFrom(MainDashBoardViewModel::class.java)) {
 
             return MainDashBoardViewModel(userRepository) as T
+        }else if (modelClass.isAssignableFrom(ChangeAccountViewModel::class.java)) {
+
+            return ChangeAccountViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -36,26 +38,27 @@ class MainViewModelFactory(private val userRepository: UserRepository): ViewMode
 
 @Composable
 fun provideSignUpViewModel(viewModelFactory: MainViewModelFactory): SignUpViewModel {
-    val viewModel: SignUpViewModel = viewModel(factory = viewModelFactory)
-    return viewModel
+    return viewModel(factory = viewModelFactory)
 }
 
 @Composable
 fun provideLoginViewModel(viewModelFactory: MainViewModelFactory): LoginViewModel {
-    val viewModel: LoginViewModel = viewModel(factory = viewModelFactory)
-    return viewModel
+    return viewModel(factory = viewModelFactory)
 }
 
 @Composable
 fun provideProfileViewModel(viewModelFactory: MainViewModelFactory): ProfileViewModel {
-    val viewModel: ProfileViewModel = viewModel(factory = viewModelFactory)
-    return viewModel
+    return viewModel(factory = viewModelFactory)
 }
 
 @Composable
 fun provideMainDashBoardViewModel(viewModelFactory: MainViewModelFactory): MainDashBoardViewModel {
-    val viewModel: MainDashBoardViewModel = viewModel(factory = viewModelFactory)
-    return viewModel
+    return viewModel(factory = viewModelFactory)
+}
+
+@Composable
+fun provideChangeAccountViewModel(viewModelFactory: MainViewModelFactory): ChangeAccountViewModel {
+    return viewModel(factory = viewModelFactory)
 }
 
 

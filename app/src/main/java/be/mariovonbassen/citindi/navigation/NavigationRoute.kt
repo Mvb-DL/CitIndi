@@ -8,6 +8,7 @@ sealed class NavigationRoutes{
         object AddCityScreen : Authenticated("Add")
         object ProfileScreen : Authenticated("Profile")
         object SettingsScreen : Authenticated("Settings")
+        object ChangeAccountScreen : Authenticated("ChangeAccount")
 
     }
 

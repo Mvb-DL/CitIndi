@@ -128,7 +128,10 @@ fun ProfileButton(navController: NavController) {
         ) {
 
             Button(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = {
+                    navController.navigate(NavigationRoutes.Authenticated.ChangeAccountScreen.route)
+
+                }, modifier = Modifier
                     .width(200.dp),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color)

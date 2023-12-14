@@ -11,6 +11,7 @@ import androidx.navigation.navigation
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.screens.authenticated.AddCityScreen
+import be.mariovonbassen.citindi.ui.screens.authenticated.ChangeAccountScreen
 import be.mariovonbassen.citindi.ui.screens.authenticated.MainDashBoardScreen
 import be.mariovonbassen.citindi.ui.screens.authenticated.ProfileScreen
 import be.mariovonbassen.citindi.ui.screens.authenticated.SettingsScreen
@@ -102,6 +103,10 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController, currentRout
 
         composable(route = NavigationRoutes.Authenticated.SettingsScreen.route){
             SettingsScreen(navController = navController, currentRoute=currentRoute)
+        }
+
+        composable(route = NavigationRoutes.Authenticated.ChangeAccountScreen.route){
+            ChangeAccountScreen(navController = navController, currentRoute=currentRoute)
         }
     }
 }
