@@ -15,8 +15,13 @@ class OfflineUserRepository(private val userDao: UserDao) : UserRepository {
     override suspend fun deleteUser(user: User) = userDao.deleteUser(user)
 
     override suspend fun checkUserPresence(password: String, userName: String): Boolean {
-        val user = userDao.getUserByPassword(password, userName)
+        val user = userDao.getUserByPasswordAndUserName(password, userName)
         return user != null
+    }
+
+    override suspend fun getUserByPasswordAndUserName(password: String, userName: String): User {
+        val user = userDao.getUserByPasswordAndUserName(password, userName)
+        return user
     }
 
 }

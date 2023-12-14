@@ -1,7 +1,5 @@
 package be.mariovonbassen.citindi.ui.components
 
-
-
 import androidx.compose.foundation.background
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -54,7 +52,6 @@ fun AlertMessage(alertText: String) {
         LaunchedEffect(showDialog) {
             coroutineScope.launch {
                 delay(2000)
-                //TODO
                 loginViewmodel.resetError()
                 signupViewmodel.resetError()
             }

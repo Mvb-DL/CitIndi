@@ -12,6 +12,7 @@ interface UserRepository {
     /**
      * Retrieve an item from the given data source that matches with the [id].
      */
+
     fun getUserStream(userId: Int): Flow<User?>
 
     /**
@@ -25,5 +26,7 @@ interface UserRepository {
     suspend fun deleteUser(user: User)
 
     suspend fun checkUserPresence(password: String, userName: String): Boolean
+
+    suspend fun getUserByPasswordAndUserName(password: String, userName: String): User
 
 }

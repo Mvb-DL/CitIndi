@@ -2,6 +2,7 @@ package be.mariovonbassen.citindi.ui.screens.authenticated
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,14 +34,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.navigation.NavigationRoutes
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.DropDownMenu
 import be.mariovonbassen.citindi.ui.components.Header
 import be.mariovonbassen.citindi.ui.components.HomeButton
+import be.mariovonbassen.citindi.ui.provideLoginViewModel
+import be.mariovonbassen.citindi.ui.provideProfileViewModel
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.viewmodels.ProfileViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
@@ -49,6 +56,15 @@ import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 @Composable
 fun ProfileScreen(navController: NavController, currentRoute: String
 ){
+
+    val context = LocalContext.current
+    val yourDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(yourDao)
+    val viewModelFactory = MainViewModelFactory(repository)
+    val viewmodel = provideProfileViewModel(viewModelFactory)
+
+    val state = viewmodel.globalActiveUserState
+
 
     Surface(
         modifier = Modifier
@@ -62,15 +78,8 @@ fun ProfileScreen(navController: NavController, currentRoute: String
                 .padding(0.dp, 30.dp)
         ) {
 
-          /*  ProfileDataDisplay(viewmodel=viewmodel)
+          Text(text = "${state.value.activeUser?.userName}")
 
-            LazyColumn {
-                items(entries) { user ->
-                    Text(text = "Id: ${user.userId}")
-                    Text(text = "Username: ${user.userName}")
-                    Text(text = "Password: ${user.password}")
-                }
-            }*/
         }
 
         Box(){

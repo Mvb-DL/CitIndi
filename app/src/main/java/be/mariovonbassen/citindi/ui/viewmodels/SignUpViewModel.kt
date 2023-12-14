@@ -1,12 +1,14 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.ui.components.ErrorType
+import be.mariovonbassen.citindi.ui.states.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.RegistrationErrorState
 import be.mariovonbassen.citindi.ui.states.SignUpState
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +28,6 @@ class SignUpViewModel(
     private val _errorState = MutableStateFlow(RegistrationErrorState())
     val errorState: StateFlow<RegistrationErrorState> = _errorState.asStateFlow()
 
-    val allEntries: Flow<List<User>> = userRepository.getAllUsers()
 
     fun onUserEvent(event: SignUpUserEvent) {
 
@@ -80,15 +81,10 @@ class SignUpViewModel(
                         password = userPassword,
                     )
 
+
                     viewModelScope.launch {
                        userRepository.upsertUser(user)
                     }
-
-                  /* _state.update { it.copy(
-                        userName = "",
-                        userPassword = "",
-                        userPasswordConfirm = ""
-                    ) }*/
 
                 }
 

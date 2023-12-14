@@ -3,11 +3,16 @@ package be.mariovonbassen.citindi.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.LoginUserEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
+import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.ui.components.ErrorType
+import be.mariovonbassen.citindi.ui.states.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
 import be.mariovonbassen.citindi.ui.states.LoginErrorState
 import be.mariovonbassen.citindi.ui.states.LoginState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +28,9 @@ class LoginViewModel(
 
     private val _errorState = MutableStateFlow(LoginErrorState())
     val errorState: StateFlow<LoginErrorState> = _errorState.asStateFlow()
+
+    //handling the active logged in User
+    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
 
     fun onUserEvent(event: LoginUserEvent) {
 
@@ -63,10 +71,19 @@ class LoginViewModel(
                                     it.copy(isLoginSuccessful = true)
                                 }
 
+                                //check active user
+                                val activeUser = userRepository.getUserByPasswordAndUserName(
+                                    state.value.userPassword,
+                                    state.value.userName)
+
+                                val updatedState = ActiveUserState(activeUser= activeUser, isActive = true)
+
+                                GlobalActiveUserState.updateAppState(updatedState)
+
                             }else {
 
                                 _state.update {
-                                        it.copy(isLoginSuccessful = false)
+                                    it.copy(isLoginSuccessful = false)
                                 }
 
                                 _errorState.update {
