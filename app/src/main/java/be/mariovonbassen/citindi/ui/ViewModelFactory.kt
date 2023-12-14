@@ -9,6 +9,7 @@ import be.mariovonbassen.citindi.ui.viewmodels.ChangeAccountViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.MainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.ProfileViewModel
+import be.mariovonbassen.citindi.ui.viewmodels.SettingsViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 
 
@@ -31,6 +32,10 @@ class MainViewModelFactory(private val userRepository: UserRepository): ViewMode
         }else if (modelClass.isAssignableFrom(ChangeAccountViewModel::class.java)) {
 
             return ChangeAccountViewModel(userRepository) as T
+        }
+        else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
+
+            return SettingsViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -58,6 +63,11 @@ fun provideMainDashBoardViewModel(viewModelFactory: MainViewModelFactory): MainD
 
 @Composable
 fun provideChangeAccountViewModel(viewModelFactory: MainViewModelFactory): ChangeAccountViewModel {
+    return viewModel(factory = viewModelFactory)
+}
+
+@Composable
+fun provideSettingsViewModel(viewModelFactory: MainViewModelFactory): SettingsViewModel {
     return viewModel(factory = viewModelFactory)
 }
 

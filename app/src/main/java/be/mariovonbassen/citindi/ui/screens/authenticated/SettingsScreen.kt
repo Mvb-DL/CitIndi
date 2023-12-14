@@ -27,14 +27,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
+import be.mariovonbassen.citindi.database.events.SettingsEvent
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.navigation.NavigationRoutes
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Header
 import be.mariovonbassen.citindi.ui.components.HomeButton
+import be.mariovonbassen.citindi.ui.provideProfileViewModel
+import be.mariovonbassen.citindi.ui.provideSettingsViewModel
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
+import be.mariovonbassen.citindi.ui.viewmodels.SettingsViewModel
 
 @Composable
 fun SettingsScreen(navController: NavController, currentRoute: String){
+
+    val context = LocalContext.current
+    val yourDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(yourDao)
+    val viewModelFactory = MainViewModelFactory(repository)
+    val viewmodel = provideSettingsViewModel(viewModelFactory)
+
+    val active_user_state = viewmodel.globalActiveUserState
 
     Surface(
         modifier = Modifier
@@ -46,14 +64,14 @@ fun SettingsScreen(navController: NavController, currentRoute: String){
         Box(
             modifier = Modifier
         ) {
-            SettingsButton(navController=navController)
+            SettingsButton(navController=navController, viewmodel=viewmodel)
         }
 
     }
 }
 
 @Composable
-fun SettingsButton(navController: NavController) {
+fun SettingsButton(navController: NavController, viewmodel: SettingsViewModel) {
 
     val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
@@ -69,7 +87,10 @@ fun SettingsButton(navController: NavController) {
         ) {
 
             Button(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = {
+                    navController.navigate(NavigationRoutes.Authenticated.ChangeAccountScreen.route)
+
+                }, modifier = Modifier
                     .width(200.dp),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color)
@@ -103,7 +124,11 @@ fun SettingsButton(navController: NavController) {
         ) {
 
             Button(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = {
+                    viewmodel.onUserEvent(SettingsEvent.ConfirmDeleteUser)
+                    //bedingung
+                    navController.navigate(NavigationRoutes.Unauthenticated.LoginScreen.route)
+                }, modifier = Modifier
                     .width(200.dp),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color)
@@ -137,7 +162,9 @@ fun SettingsButton(navController: NavController) {
         ) {
 
             Button(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = {
+                    viewmodel.onUserEvent(SettingsEvent.LogoutUser)
+                }, modifier = Modifier
                     .width(200.dp),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color)
