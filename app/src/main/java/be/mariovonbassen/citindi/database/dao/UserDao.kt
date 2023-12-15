@@ -19,10 +19,10 @@ interface UserDao {
     suspend fun upsertUser(user: User)
 
     @Delete
-    suspend fun deleteUser(contact: User)
+    suspend fun deleteUser(user: User)
 
     @Query("SELECT * from users WHERE userId = :userId")
-    fun getUser(userId: Int): Flow<User>
+    fun getUser(userId: Int): User
 
     @Query("SELECT * from users ORDER BY userName ASC")
     fun getAllUsers(): Flow<List<User>>

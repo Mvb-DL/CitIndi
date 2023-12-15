@@ -76,6 +76,8 @@ class LoginViewModel(
                                     state.value.userPassword,
                                     state.value.userName)
 
+                                Log.d("Login Active User:", activeUser.toString())
+
                                 val updatedState = ActiveUserState(activeUser= activeUser, isActive = true)
 
                                 GlobalActiveUserState.updateAppState(updatedState)

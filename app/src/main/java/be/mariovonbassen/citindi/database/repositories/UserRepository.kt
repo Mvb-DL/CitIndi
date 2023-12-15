@@ -13,7 +13,7 @@ interface UserRepository {
      * Retrieve an item from the given data source that matches with the [id].
      */
 
-    fun getUserStream(userId: Int): Flow<User?>
+    fun getUser(userId: Int): User
 
     /**
      * Insert item in the data source

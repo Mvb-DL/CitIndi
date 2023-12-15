@@ -1,5 +1,6 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
@@ -47,32 +48,40 @@ class ChangeAccountViewModel (
 
             is ChangeAccountEvent.ConfirmChangeAccount -> {
 
-                val userName = state.value.userName
-                val userPassword = state.value.userPassword
+                val activeUser = globalActiveUserState.value.activeUser
 
-                viewModelScope.launch {
+                if (activeUser != null) {
 
-                    val user = User(
-                        userName = userName,
-                        password = userPassword,
-                    )
+                    viewModelScope.launch {
 
-                    userRepository.upsertUser(user)
+                        val user = userRepository.getUserByPasswordAndUserName(
+                            activeUser.password,
+                            activeUser.userName
+                        )
 
-                    //update active User
-                    val activeUser = userRepository.getUserByPasswordAndUserName(
-                        state.value.userPassword,
-                        state.value.userName
-                    )
+                        val newUserName = state.value.userName
+                        val newUserPassword = state.value.userPassword
 
-                    val updatedState = ActiveUserState(activeUser = activeUser, isActive = true)
+                        //Check if data is empty and keep old state data
+                        if (newUserName != "" || newUserPassword != "") {
 
-                    GlobalActiveUserState.updateAppState(updatedState)
+                            user.apply {
+                                userName = newUserName
+                                password = newUserPassword
+                            }
 
+                            userRepository.upsertUser(user)
+
+                            //update active User
+                            val updatedState = ActiveUserState(activeUser = user, isActive = true)
+
+                            GlobalActiveUserState.updateAppState(updatedState)
+
+                        }
+                    }
                 }
-
             }
         }
     }
-
 }
+

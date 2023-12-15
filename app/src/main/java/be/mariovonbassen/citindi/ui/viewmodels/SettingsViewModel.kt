@@ -8,19 +8,17 @@ import be.mariovonbassen.citindi.database.events.SettingsEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.states.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
     val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
-
-    //Delete User
-
-    //Logout User
 
     fun onUserEvent(event: SettingsEvent) {
 
@@ -30,17 +28,18 @@ class SettingsViewModel(
 
                 viewModelScope.launch {
 
-
                     if (globalActiveUserState.value.activeUser != null) {
 
-                        Log.d("1", globalActiveUserState.value.activeUser.toString())
+                        withContext(Dispatchers.IO) {
 
-                        userRepository.deleteUser(globalActiveUserState.value.activeUser!!)
+                            Log.d("Active User", globalActiveUserState.value.activeUser.toString())
 
-                        Log.d("2", globalActiveUserState.value.activeUser.toString())
+                            val user = userRepository.getUser(globalActiveUserState.value.activeUser!!.userId)
 
+                            Log.d("USER", user.toString())
 
-                        Log.d("3", globalActiveUserState.value.activeUser.toString())
+                            userRepository.deleteUser(user)
+                        }
 
                     }else{
                         Log.d("User is Null", "")

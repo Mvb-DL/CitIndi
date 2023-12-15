@@ -75,22 +75,28 @@ class SignUpViewModel(
 
                 if (inputsValidated) {
 
-                    _state.update {
-                        it.copy(isRegistrationSuccessful = true)
-                    }
-
                     val user = User(
                         userName = userName,
                         password = userPassword,
                     )
 
-                    val updatedState = ActiveUserState(activeUser= user, isActive = true)
-
-                    GlobalActiveUserState.updateAppState(updatedState)
-
                     viewModelScope.launch {
-                       userRepository.upsertUser(user)
+
+                        userRepository.upsertUser(user)
+
+                        val activeUser = userRepository.getUserByPasswordAndUserName(
+                            userPassword,
+                            userName)
+
+                        val updatedState = ActiveUserState(activeUser= activeUser, isActive = true)
+
+                        GlobalActiveUserState.updateAppState(updatedState)
+
                     }
+
+                        _state.update {
+                            it.copy(isRegistrationSuccessful = true)
+                        }
 
                 }
 
