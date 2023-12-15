@@ -23,23 +23,33 @@ class AddCityViewModel(
         when (event) {
 
             is AddCityEvent.SetCityName-> {
-
+                _state.update {
+                    it.copy(cityName = event.cityName)
+                }
             }
 
             is AddCityEvent.SetArrivalDate-> {
-
+                _state.update {
+                    it.copy(arrivalDate = event.arrivalDate)
+                }
             }
 
             is AddCityEvent.SetLeavingDate-> {
-
+                _state.update {
+                    it.copy(leavingDate = event.leavingDate)
+                }
             }
 
             is AddCityEvent.SetGpsPosition-> {
-
+                _state.update {
+                    it.copy(gpsPosition = event.gpsPosition)
+                }
             }
 
             is AddCityEvent.SetCountry-> {
-
+                _state.update {
+                    it.copy(country = event.country)
+                }
             }
 
             is AddCityEvent.SetSurfaceOpacity-> {
@@ -49,22 +59,11 @@ class AddCityViewModel(
             }
 
             is AddCityEvent.ReSetSurfaceOpacity-> {
-                _state.update {
-                    it.copy(surfaceOpacity = 1f)
-                }
+
             }
 
             is AddCityEvent.SetOpenDateField-> {
 
-                if(state.value.openDateField){
-                    _state.update {
-                        it.copy(openDateField = false)
-                    }
-                }else{
-                    _state.update {
-                        it.copy(openDateField = true)
-                    }
-                }
             }
 
             is AddCityEvent.ConfirmAddCity-> {
@@ -73,27 +72,29 @@ class AddCityViewModel(
         }
     }
 
-    fun setCityName(cityName: String){
-        _state.update {
-            it.copy(cityName = cityName)
-        }
-    }
-
     fun setOpacity(){
 
+        if (state.value.surfaceOpacity == 1.0f) {
+            _state.update {
+                it.copy(surfaceOpacity = 0.4f)
+            }
+            }else{
+                _state.update {
+                    it.copy(surfaceOpacity = 1.0f)
+                }
+            }
+
     }
 
-    fun resetOpacity(){
+    fun handleDateField(){
+        if(state.value.openDateField){
+            _state.update {
+                it.copy(openDateField = false)
+            }
+        }else{
+            _state.update {
+                it.copy(openDateField = true)
+            }
+        }
     }
-
-    fun closeDateField(){
-
-    }
-
-    fun openDateField(){
-
-    }
-
-
-
 }

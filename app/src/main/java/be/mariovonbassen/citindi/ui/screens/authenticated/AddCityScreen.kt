@@ -201,7 +201,7 @@ fun DateFields(viewmodel: AddCityViewModel, state: AddCityState){
         Spacer(modifier = Modifier.width(8.dp))
 
         IconButton(onClick = {
-                viewmodel.openDateField()
+                viewmodel.handleDateField()
                 viewmodel.setOpacity()
         }) {
             Icon(
@@ -215,19 +215,16 @@ fun DateFields(viewmodel: AddCityViewModel, state: AddCityState){
 
         if (state.openDateField){
 
-                DatePickerField()
+            DatePickerField(viewmodel= viewmodel)
 
         }
-
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField() {
-
-
+fun DatePickerField(viewmodel: AddCityViewModel) {
 
     Dialog(onDismissRequest = { }) {
 
@@ -250,13 +247,13 @@ fun DatePickerField() {
                     Text("Selected date timestamp: ${datePickerState.selectedDateMillis ?: "no selection"}")
 
                     Button(onClick = {
-
+                        viewmodel.setOpacity()
+                        viewmodel.handleDateField()
                     }) {
                         Text(text = "Add Date")
                     }
                 }
         }
-
     }
 }
 
