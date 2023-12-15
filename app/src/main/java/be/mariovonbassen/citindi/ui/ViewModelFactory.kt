@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import be.mariovonbassen.citindi.database.repositories.CityRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
+import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.ChangeAccountViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.MainDashBoardViewModel
@@ -13,7 +15,9 @@ import be.mariovonbassen.citindi.ui.viewmodels.SettingsViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 
 
-class MainViewModelFactory(private val userRepository: UserRepository): ViewModelProvider.Factory {
+class MainViewModelFactory(private val userRepository: UserRepository,
+                           private val cityRepository: CityRepository):
+    ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
@@ -32,10 +36,12 @@ class MainViewModelFactory(private val userRepository: UserRepository): ViewMode
         }else if (modelClass.isAssignableFrom(ChangeAccountViewModel::class.java)) {
 
             return ChangeAccountViewModel(userRepository) as T
-        }
-        else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
+        }else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
 
             return SettingsViewModel(userRepository) as T
+        } else if (modelClass.isAssignableFrom(AddCityViewModel::class.java)) {
+
+            return AddCityViewModel(cityRepository, userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -68,6 +74,11 @@ fun provideChangeAccountViewModel(viewModelFactory: MainViewModelFactory): Chang
 
 @Composable
 fun provideSettingsViewModel(viewModelFactory: MainViewModelFactory): SettingsViewModel {
+    return viewModel(factory = viewModelFactory)
+}
+
+@Composable
+fun provideAddCityViewModel(viewModelFactory: MainViewModelFactory): AddCityViewModel {
     return viewModel(factory = viewModelFactory)
 }
 

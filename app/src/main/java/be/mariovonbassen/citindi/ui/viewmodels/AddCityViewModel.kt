@@ -1,15 +1,19 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
+import be.mariovonbassen.citindi.database.repositories.CityRepository
+import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.states.AddCityState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class AddCityViewModel : ViewModel() {
+class AddCityViewModel(
+    private val cityRepository: CityRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
 
-    // Expose screen UI state
     private val _state = MutableStateFlow(AddCityState())
     val state: StateFlow<AddCityState> = _state.asStateFlow()
 
