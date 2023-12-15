@@ -52,7 +52,6 @@ class LoginViewModel(
                 }
             }
 
-
             is LoginUserEvent.ConfirmLogin -> {
 
                 val inputsValidated = validateLoginInputs()
@@ -67,20 +66,18 @@ class LoginViewModel(
 
                             if (userExist) {
 
-                                _state.update {
-                                    it.copy(isLoginSuccessful = true)
-                                }
-
                                 //check active user
                                 val activeUser = userRepository.getUserByPasswordAndUserName(
                                     state.value.userPassword,
                                     state.value.userName)
 
-                                Log.d("Login Active User:", activeUser.toString())
-
                                 val updatedState = ActiveUserState(activeUser= activeUser, isActive = true)
 
                                 GlobalActiveUserState.updateAppState(updatedState)
+
+                                _state.update {
+                                    it.copy(isLoginSuccessful = true)
+                                }
 
                             }else {
 
@@ -94,17 +91,12 @@ class LoginViewModel(
                                         errorMessage = "Password or Username wrong!"
                                     )
                                 }
-
                             }
                         }
                 }
-
             }
-
-
         }
     }
-
 
     fun resetError(){
         _errorState.update {

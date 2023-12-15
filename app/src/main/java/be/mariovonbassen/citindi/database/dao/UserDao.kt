@@ -30,14 +30,4 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE password = :password AND userName = :userName")
     suspend fun getUserByPasswordAndUserName(password: String, userName: String): User
 
-
-/*
-@Insert(onConflict = OnConflictStrategy.REPLACE)
-suspend fun insertCity(city: City)
-
-
-@Transaction
-@Query("SELECT * FROM users WHERE userId = :userId")
-suspend fun getUserWithCities(userId: Int): List<UserWithCities>*/
-
 }

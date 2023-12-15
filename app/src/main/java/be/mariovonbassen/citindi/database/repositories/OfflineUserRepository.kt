@@ -1,7 +1,9 @@
 package be.mariovonbassen.citindi.database.repositories
 
+import be.mariovonbassen.citindi.database.dao.CityDao
 import be.mariovonbassen.citindi.database.dao.UserDao
 import be.mariovonbassen.citindi.models.User
+import be.mariovonbassen.citindi.models.city.City
 import kotlinx.coroutines.flow.Flow
 
 class OfflineUserRepository(private val userDao: UserDao) : UserRepository {

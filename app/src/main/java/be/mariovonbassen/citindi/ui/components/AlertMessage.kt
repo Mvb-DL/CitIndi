@@ -29,8 +29,9 @@ fun AlertMessage(alertText: String) {
     val color = Color(android.graphics.Color.parseColor(alarmRed))
 
     val context = LocalContext.current
-    val yourDao = UserDatabase.getDatabase(context).userDao()
-    val repository = OfflineUserRepository(yourDao)
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val cityDao = UserDatabase.getDatabase(context).userDao()
+    val repository = OfflineUserRepository(userDao)
     val viewModelFactory = MainViewModelFactory(repository)
 
     val loginViewmodel = provideLoginViewModel(viewModelFactory)
