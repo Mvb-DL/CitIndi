@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.provideSignUpViewModel
@@ -49,9 +50,13 @@ fun SignUpScreen(
                  ) {
 
     val context = LocalContext.current
-    val yourDao = UserDatabase.getDatabase(context).userDao()
-    val repository = OfflineUserRepository(yourDao)
-    val viewModelFactory = MainViewModelFactory(repository)
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
+
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val userRepository = OfflineUserRepository(userDao)
+
+    val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideSignUpViewModel(viewModelFactory)
 
     val state by viewmodel.state.collectAsState()

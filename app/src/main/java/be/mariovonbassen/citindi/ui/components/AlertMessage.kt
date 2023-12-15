@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.provideLoginViewModel
@@ -29,10 +30,13 @@ fun AlertMessage(alertText: String) {
     val color = Color(android.graphics.Color.parseColor(alarmRed))
 
     val context = LocalContext.current
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
+
     val userDao = UserDatabase.getDatabase(context).userDao()
-    val cityDao = UserDatabase.getDatabase(context).userDao()
-    val repository = OfflineUserRepository(userDao)
-    val viewModelFactory = MainViewModelFactory(repository)
+    val userRepository = OfflineUserRepository(userDao)
+
+    val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
 
     val loginViewmodel = provideLoginViewModel(viewModelFactory)
     val signupViewmodel = provideSignUpViewModel(viewModelFactory)

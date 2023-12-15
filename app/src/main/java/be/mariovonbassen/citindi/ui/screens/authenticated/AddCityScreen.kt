@@ -52,14 +52,33 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.events.AddCityEvent
+import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Header
+import be.mariovonbassen.citindi.ui.provideAddCityViewModel
+import be.mariovonbassen.citindi.ui.provideChangeAccountViewModel
 import be.mariovonbassen.citindi.ui.states.AddCityState
 import be.mariovonbassen.citindi.ui.theme.lightGray
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
 
 
 @Composable
-fun AddCityScreen(viewmodel : AddCityViewModel = viewModel(), navController: NavController, currentRoute : String) {
+fun AddCityScreen(navController: NavController, currentRoute : String) {
+
+    val context = LocalContext.current
+
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
+
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val userRepository = OfflineUserRepository(userDao)
+
+    val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
+    val viewmodel = provideAddCityViewModel(viewModelFactory)
 
     val state by viewmodel.state.collectAsState()
 
@@ -95,7 +114,7 @@ fun AddCityScreen(viewmodel : AddCityViewModel = viewModel(), navController: Nav
                 modifier = Modifier
             ) {
 
-                AddCityForm(state = state)
+                AddCityForm(viewmodel = viewmodel, state = state)
 
             }
         }
@@ -117,7 +136,7 @@ fun ExistingCityDisplay(){
 
 
 @Composable
-fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState) {
+fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
 
     val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
@@ -134,12 +153,12 @@ fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState)
                 .width(250.dp),
             value = state.cityName,
             onValueChange = {
-                viewmodel.setCityName(it)
+                viewmodel.onUserEvent(AddCityEvent.SetCityName(it))
             })
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        DateFields(state=state)
+        DateFields(viewmodel=viewmodel, state=state)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -162,7 +181,7 @@ fun AddCityForm(viewmodel : AddCityViewModel = viewModel(), state: AddCityState)
 
 
 @Composable
-fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
+fun DateFields(viewmodel: AddCityViewModel, state: AddCityState){
 
     Row(
         modifier = Modifier
@@ -175,7 +194,9 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
                 .width(200.dp),
                 label = { Text(text = "Add Arrival date") },
                 value = "",
-                onValueChange = { })
+                onValueChange = {
+                    viewmodel.onUserEvent(AddCityEvent.SetArrivalDate(it))
+                })
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -204,7 +225,9 @@ fun DateFields(viewmodel : AddCityViewModel = viewModel(), state: AddCityState){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField(viewmodel : AddCityViewModel = viewModel()) {
+fun DatePickerField() {
+
+
 
     Dialog(onDismissRequest = { }) {
 
@@ -227,8 +250,7 @@ fun DatePickerField(viewmodel : AddCityViewModel = viewModel()) {
                     Text("Selected date timestamp: ${datePickerState.selectedDateMillis ?: "no selection"}")
 
                     Button(onClick = {
-                        viewmodel.resetOpacity()
-                        viewmodel.closeDateField()
+
                     }) {
                         Text(text = "Add Date")
                     }

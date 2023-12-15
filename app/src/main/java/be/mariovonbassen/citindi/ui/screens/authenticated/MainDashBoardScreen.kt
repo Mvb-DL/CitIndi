@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Footer
@@ -40,9 +41,13 @@ import kotlinx.coroutines.flow.StateFlow
 fun MainDashBoardScreen(navController: NavController) {
 
     val context = LocalContext.current
-    val yourDao = UserDatabase.getDatabase(context).userDao()
-    val repository = OfflineUserRepository(yourDao)
-    val viewModelFactory = MainViewModelFactory(repository)
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
+
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val userRepository = OfflineUserRepository(userDao)
+
+    val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideMainDashBoardViewModel(viewModelFactory)
 
     val state = viewmodel.globalActiveUserState

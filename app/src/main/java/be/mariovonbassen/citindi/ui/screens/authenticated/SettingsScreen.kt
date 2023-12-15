@@ -33,6 +33,7 @@ import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
 import be.mariovonbassen.citindi.database.events.SettingsEvent
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.navigation.NavigationRoutes
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
@@ -47,12 +48,14 @@ import be.mariovonbassen.citindi.ui.viewmodels.SettingsViewModel
 fun SettingsScreen(navController: NavController, currentRoute: String){
 
     val context = LocalContext.current
-    val yourDao = UserDatabase.getDatabase(context).userDao()
-    val repository = OfflineUserRepository(yourDao)
-    val viewModelFactory = MainViewModelFactory(repository)
-    val viewmodel = provideSettingsViewModel(viewModelFactory)
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
 
-    val active_user_state = viewmodel.globalActiveUserState
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val userRepository = OfflineUserRepository(userDao)
+
+    val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
+    val viewmodel = provideSettingsViewModel(viewModelFactory)
 
     Surface(
         modifier = Modifier
