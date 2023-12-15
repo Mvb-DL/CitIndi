@@ -73,14 +73,23 @@ class SignUpViewModel(
 
                 val inputsValidated = validateSignUpInputs()
 
-                if (inputsValidated) {
+                viewModelScope.launch {
 
-                    val user = User(
-                        userName = userName,
-                        password = userPassword,
-                    )
+                    val userExist = userRepository.checkUserPresence(userPassword, userName)
 
-                    viewModelScope.launch {
+                    if (userExist){
+                        _errorState.update {
+                            it.copy(
+                                isError = true,
+                                errorMessage = "Username or Password already exists!"
+                            )
+                        }
+                    } else if (inputsValidated) {
+
+                        val user = User(
+                            userName = userName,
+                            password = userPassword,
+                        )
 
                         userRepository.upsertUser(user)
 
@@ -92,11 +101,11 @@ class SignUpViewModel(
 
                         GlobalActiveUserState.updateAppState(updatedState)
 
-                    }
-
                         _state.update {
                             it.copy(isRegistrationSuccessful = true)
                         }
+
+                    }
 
                 }
 
@@ -104,13 +113,11 @@ class SignUpViewModel(
         }
     }
 
-
     fun resetError(){
         _errorState.update {
             it.copy(isError = false)
         }
     }
-
 
     private fun validateSignUpInputs(): Boolean {
 
