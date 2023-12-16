@@ -32,11 +32,7 @@ class SettingsViewModel(
 
                         withContext(Dispatchers.IO) {
 
-                            Log.d("Active User", globalActiveUserState.value.activeUser.toString())
-
                             val user = userRepository.getUser(globalActiveUserState.value.activeUser!!.userId)
-
-                            Log.d("USER", user.toString())
 
                             userRepository.deleteUser(user)
                         }

@@ -29,9 +29,6 @@ class SignUpViewModel(
     private val _errorState = MutableStateFlow(RegistrationErrorState())
     val errorState: StateFlow<RegistrationErrorState> = _errorState.asStateFlow()
 
-    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
-
-
     fun onUserEvent(event: SignUpUserEvent) {
 
         when(event) {

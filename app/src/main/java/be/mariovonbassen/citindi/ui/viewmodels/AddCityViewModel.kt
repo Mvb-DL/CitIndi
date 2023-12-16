@@ -1,6 +1,8 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.repositories.CityRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.states.AddCityState
@@ -9,6 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import be.mariovonbassen.citindi.database.events.AddCityEvent
+import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.ui.states.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AddCityViewModel(
     private val cityRepository: CityRepository,
@@ -18,9 +26,33 @@ class AddCityViewModel(
     private val _state = MutableStateFlow(AddCityState())
     val state: StateFlow<AddCityState> = _state.asStateFlow()
 
+    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
+
+
     fun onUserEvent(event: AddCityEvent) {
 
         when (event) {
+
+            is AddCityEvent.ScreenLoaded -> {
+
+                viewModelScope.launch {
+
+                    withContext(Dispatchers.IO) {
+
+                        val userId = globalActiveUserState.value.activeUser?.userId
+
+                        if (userId != null) {
+
+                            val userCities = cityRepository.getCitiesByUserId(userId)
+
+                            _state.update {
+                                it.copy(userCities = userCities)
+                            }
+                        }
+
+                    }
+                }
+            }
 
             is AddCityEvent.SetCityName-> {
                 _state.update {
@@ -68,6 +100,38 @@ class AddCityViewModel(
 
             is AddCityEvent.ConfirmAddCity-> {
 
+                val cityName = state.value.cityName
+                val arrivalDate = state.value.arrivalDate
+                val leavingDate = state.value.leavingDate
+                val gpsPosition = state.value.gpsPosition
+                val country = state.value.country
+                val userId = globalActiveUserState.value.activeUser?.userId
+
+                //validate input
+
+                viewModelScope.launch {
+
+                    if (userId != null) {
+
+                        withContext(Dispatchers.IO) {
+
+                            val city = City(
+                                userId, cityName, arrivalDate,
+                                leavingDate, gpsPosition, country
+                            )
+
+                            cityRepository.upsertCity(city)
+
+                            _state.update {
+                                it.copy(isAddingSuccessful = true)
+                            }
+
+                        }
+
+                    }
+
+                }
+
             }
         }
     }
@@ -97,4 +161,6 @@ class AddCityViewModel(
             }
         }
     }
+
+
 }
