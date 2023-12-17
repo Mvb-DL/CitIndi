@@ -12,11 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.models.city.City
-import be.mariovonbassen.citindi.ui.states.ActiveUserState
-import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AddCityViewModel(
     private val cityRepository: CityRepository,
@@ -26,7 +31,7 @@ class AddCityViewModel(
     private val _state = MutableStateFlow(AddCityState())
     val state: StateFlow<AddCityState> = _state.asStateFlow()
 
-    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
+    private val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
 
 
     fun onUserEvent(event: AddCityEvent) {
@@ -85,16 +90,30 @@ class AddCityViewModel(
             }
 
             is AddCityEvent.SetSurfaceOpacity-> {
-                _state.update {
-                    it.copy(surfaceOpacity = 0.4f)
-                }
-            }
 
-            is AddCityEvent.ReSetSurfaceOpacity-> {
+                if (state.value.surfaceOpacity == 1.0f) {
+                    _state.update {
+                        it.copy(surfaceOpacity = 0.4f)
+                    }
+                }else{
+                    _state.update {
+                        it.copy(surfaceOpacity = 1.0f)
+                    }
+                }
 
             }
 
             is AddCityEvent.SetOpenDateField-> {
+
+                if(state.value.openDateField){
+                    _state.update {
+                        it.copy(openDateField = false)
+                    }
+                }else{
+                    _state.update {
+                        it.copy(openDateField = true)
+                    }
+                }
 
             }
 
@@ -122,45 +141,20 @@ class AddCityViewModel(
 
                             cityRepository.upsertCity(city)
 
+                            val latestCity = cityRepository.getLatestCity(userId)
+
+                            val updatedCityState = ActiveCityState(activeCity = latestCity, isActive = true)
+
+                            GlobalActiveCityState.updateCityAppState(updatedCityState)
+
                             _state.update {
                                 it.copy(isAddingSuccessful = true)
                             }
 
                         }
-
                     }
-
-                }
-
+               }
             }
         }
     }
-
-    fun setOpacity(){
-
-        if (state.value.surfaceOpacity == 1.0f) {
-            _state.update {
-                it.copy(surfaceOpacity = 0.4f)
-            }
-            }else{
-                _state.update {
-                    it.copy(surfaceOpacity = 1.0f)
-                }
-            }
-
-    }
-
-    fun handleDateField(){
-        if(state.value.openDateField){
-            _state.update {
-                it.copy(openDateField = false)
-            }
-        }else{
-            _state.update {
-                it.copy(openDateField = true)
-            }
-        }
-    }
-
-
 }

@@ -102,7 +102,14 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController, currentRout
         }
 
         composable(route = NavigationRoutes.Authenticated.SettingsScreen.route){
-            SettingsScreen(navController = navController, currentRoute=currentRoute)
+            SettingsScreen(navController = navController, currentRoute=currentRoute,
+                onNavigateToUnauthenticatedRoute = {
+                    navController.navigate(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
+                        popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
+                            inclusive = true
+                        }
+                    }
+                })
         }
 
         composable(route = NavigationRoutes.Authenticated.ChangeAccountScreen.route){

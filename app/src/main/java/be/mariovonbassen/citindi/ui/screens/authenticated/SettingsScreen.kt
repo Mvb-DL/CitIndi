@@ -23,6 +23,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,7 +48,8 @@ import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.viewmodels.SettingsViewModel
 
 @Composable
-fun SettingsScreen(navController: NavController, currentRoute: String){
+fun SettingsScreen(navController: NavController, currentRoute: String,
+                   onNavigateToUnauthenticatedRoute: () -> Unit){
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
@@ -56,6 +60,14 @@ fun SettingsScreen(navController: NavController, currentRoute: String){
 
     val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideSettingsViewModel(viewModelFactory)
+
+    val state by viewmodel.state.collectAsState()
+
+    if (state.isLogoutSuccessfull) {
+        LaunchedEffect(key1 = true) {
+            onNavigateToUnauthenticatedRoute.invoke()
+        }
+    }
 
     Surface(
         modifier = Modifier

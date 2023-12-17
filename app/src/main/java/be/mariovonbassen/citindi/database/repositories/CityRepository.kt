@@ -7,4 +7,6 @@ interface CityRepository {
     suspend fun upsertCity(city: City)
     suspend fun deleteCity(city: City)
     suspend fun getCitiesByUserId(userId: Int): List<City>
+    suspend fun getCityByCityId(cityId: Int): City
+    suspend fun getLatestCity(userId: Int): City
 }

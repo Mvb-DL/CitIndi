@@ -16,7 +16,7 @@ import be.mariovonbassen.citindi.models.city.City
 
 @Database(
     entities = [User::class, City::class],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -33,7 +33,6 @@ abstract class UserDatabase : RoomDatabase() {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UserDatabase::class.java, "users")
-                    //.addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

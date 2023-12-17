@@ -1,16 +1,12 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
-import be.mariovonbassen.citindi.database.events.LoginUserEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
-import be.mariovonbassen.citindi.models.User
-import be.mariovonbassen.citindi.ui.states.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.ChangeAccountState
-import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
-import be.mariovonbassen.citindi.ui.states.LoginState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

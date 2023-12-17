@@ -1,4 +1,4 @@
-package be.mariovonbassen.citindi.ui.states
+package be.mariovonbassen.citindi.ui.states.ActiveStates
 
 import be.mariovonbassen.citindi.models.User
 

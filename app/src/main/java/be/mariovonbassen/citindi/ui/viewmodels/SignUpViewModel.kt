@@ -1,18 +1,18 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.ui.components.ErrorType
-import be.mariovonbassen.citindi.ui.states.ActiveUserState
-import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
 import be.mariovonbassen.citindi.ui.states.RegistrationErrorState
 import be.mariovonbassen.citindi.ui.states.SignUpState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,6 +97,10 @@ class SignUpViewModel(
                         val updatedState = ActiveUserState(activeUser= activeUser, isActive = true)
 
                         GlobalActiveUserState.updateAppState(updatedState)
+
+                        val updatedCityState = ActiveCityState(activeCity = null, isActive = false)
+
+                        GlobalActiveCityState.updateCityAppState(updatedCityState)
 
                         _state.update {
                             it.copy(isRegistrationSuccessful = true)

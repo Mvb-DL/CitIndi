@@ -64,6 +64,7 @@ import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Header
+import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideAddCityViewModel
 import be.mariovonbassen.citindi.ui.states.AddCityState
 import be.mariovonbassen.citindi.ui.theme.lightGray
@@ -149,7 +150,6 @@ fun ExistingCityDisplay(userCities: List<City>){
                     StackedCardsAddCity(city)
                 }
             }
-
         }
 }
 
@@ -170,8 +170,8 @@ fun StackedCardsAddCity(city: City) {
             Text(text = city.cityName, fontSize = 15.sp)
             Spacer(modifier = Modifier.height(8.dp))
             Row {
-                Text(text = "${city.arrivalDate}")
-                Text(text = "${city.leavingDate}")
+                Text(text = formatDate(city.arrivalDate))
+                Text(text = formatDate(city.leavingDate))
             }
             Text(text = city.gpsPosition)
             Text(text = city.country)
@@ -235,7 +235,6 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
             Text(text = "Add City", color = Color.White, fontSize = 20.sp)
         }
     }
-
 }
 
 
@@ -252,9 +251,8 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
             modifier = Modifier
                 .width(200.dp)
                     .onFocusChanged {
-                        state.openDateField != state.openDateField
-                        viewmodel.handleDateField()
-                        viewmodel.setOpacity()
+                       // viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
+                       // viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
             },
                 label = { Text(text = "Add Arrival/Leaving date") },
                 value = "",
@@ -265,8 +263,8 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
         Spacer(modifier = Modifier.width(8.dp))
 
         IconButton(onClick = {
-                viewmodel.handleDateField()
-                viewmodel.setOpacity()
+            viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
+            viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
         }) {
             Icon(
                     Icons.Outlined.DateRange,
@@ -341,8 +339,8 @@ fun DatePickerField(viewmodel: AddCityViewModel) {
         }
 
         Button(onClick = {
-            viewmodel.setOpacity()
-            viewmodel.handleDateField()
+            viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
+            viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
 
         }) {
             Text(text = "Add Date")

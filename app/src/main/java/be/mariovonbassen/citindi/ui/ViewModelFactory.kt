@@ -26,7 +26,7 @@ class MainViewModelFactory(private val userRepository: UserRepository,
             return SignUpViewModel(userRepository) as T
         } else if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
 
-            return LoginViewModel(userRepository) as T
+            return LoginViewModel(userRepository, cityRepository) as T
         } else if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
 
             return ProfileViewModel(userRepository) as T

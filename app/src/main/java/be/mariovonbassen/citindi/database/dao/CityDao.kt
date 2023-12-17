@@ -10,13 +10,14 @@ import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.models.city.City
 @Dao
 interface CityDao {
-
     @Upsert
     suspend fun upsertCity(city: City)
-
     @Delete
     suspend fun deleteCity(city: City)
-
     @Query("SELECT * FROM cities WHERE userId = :userId")
     fun getCitiesByUserId(userId: Int): List<City>
+    @Query("SELECT * FROM cities WHERE cityId = :cityId")
+    fun getCityByCityId(cityId: Int): City
+    @Query("SELECT * FROM cities WHERE userId = :userId ORDER BY cityId DESC LIMIT 1")
+    suspend fun getLatestCity(userId: Int): City
 }

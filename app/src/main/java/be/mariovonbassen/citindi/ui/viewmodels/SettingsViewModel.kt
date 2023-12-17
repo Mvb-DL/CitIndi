@@ -3,13 +3,19 @@ package be.mariovonbassen.citindi.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import be.mariovonbassen.citindi.database.events.ChangeAccountEvent
 import be.mariovonbassen.citindi.database.events.SettingsEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
-import be.mariovonbassen.citindi.ui.states.ActiveUserState
-import be.mariovonbassen.citindi.ui.states.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.components.clearGlobalStates
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.states.LoginState
+import be.mariovonbassen.citindi.ui.states.SettingsState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,7 +24,11 @@ class SettingsViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
+    private val _state = MutableStateFlow(SettingsState())
+    val state: StateFlow<SettingsState> = _state.asStateFlow()
+
+    var globalActiveUserState: StateFlow<ActiveUserState>? = GlobalActiveUserState.activeState
+    var globalActiveCityState: StateFlow<ActiveCityState>? = GlobalActiveCityState.activeState
 
     fun onUserEvent(event: SettingsEvent) {
 
@@ -28,11 +38,11 @@ class SettingsViewModel(
 
                 viewModelScope.launch {
 
-                    if (globalActiveUserState.value.activeUser != null) {
+                    if (globalActiveUserState?.value?.activeUser != null) {
 
                         withContext(Dispatchers.IO) {
 
-                            val user = userRepository.getUser(globalActiveUserState.value.activeUser!!.userId)
+                            val user = userRepository.getUser(globalActiveUserState?.value?.activeUser!!.userId)
 
                             userRepository.deleteUser(user)
                         }
@@ -47,9 +57,14 @@ class SettingsViewModel(
 
             is SettingsEvent.LogoutUser -> {
 
-                var globalUserState: ActiveUserState? = ActiveUserState()
+                globalActiveUserState = null
+                globalActiveCityState = null
 
-                globalUserState = null
+                _state.update {
+                    it.copy(
+                        isLogoutSuccessfull = true
+                    )
+                }
 
             }
 

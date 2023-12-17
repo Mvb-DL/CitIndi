@@ -1,6 +1,7 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,17 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
+import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Footer
+import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
-import be.mariovonbassen.citindi.ui.states.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
+import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.theme.grayShade
 import kotlinx.coroutines.flow.StateFlow
+import java.util.Date
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MainDashBoardScreen(navController: NavController) {
 
@@ -50,7 +56,9 @@ fun MainDashBoardScreen(navController: NavController) {
     val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideMainDashBoardViewModel(viewModelFactory)
 
-    val state = viewmodel.globalActiveUserState
+    val active_user_state = viewmodel.globalActiveUserState
+    val active_user_city_state = viewmodel.globalActiveCityState
+
 
     Scaffold(
 
@@ -67,12 +75,11 @@ fun MainDashBoardScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
-                CenterField()
+                CenterField(active_user_city_state = active_user_city_state)
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                ToDoDisplay(state = state)
+                ToDoDisplay(active_user_state = active_user_state)
 
                 Spacer(modifier = Modifier.height(26.dp))
 
@@ -82,8 +89,9 @@ fun MainDashBoardScreen(navController: NavController) {
         }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun CenterField() {
+fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
 
     val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
@@ -98,24 +106,42 @@ fun CenterField() {
                 .padding(10.dp)
         ) {
 
-            Text(
-                modifier = Modifier
-                    .padding(10.dp, 20.dp, 0.dp, 0.dp),
-                text = "Cityname",
-                fontSize = 25.sp,
-                fontWeight = FontWeight(600),
-                color = Color.White)
+                active_user_city_state.value.activeCity?.let {
 
-            Spacer(modifier = Modifier.height(26.dp))
+                    Row {
 
-            DashboardData()
 
+
+                    Text(
+                        modifier = Modifier
+                            .padding(10.dp, 20.dp, 0.dp, 0.dp),
+                        text = it.cityName,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight(600),
+                        color = Color.White
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .padding(10.dp, 20.dp, 0.dp, 0.dp),
+                        text = "(${it.country})",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight(600),
+                        color = Color.White
+                    )
+                    }
+
+                    Spacer(modifier = Modifier.height(26.dp))
+
+                    DashboardData(arrivalDate = it.arrivalDate, leavingDate = it.leavingDate)
+                }
         }
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun DashboardData() {
+fun DashboardData(arrivalDate: Date, leavingDate: Date) {
 
     Box(
         modifier = Modifier
@@ -127,12 +153,13 @@ fun DashboardData() {
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(text = "Arrival: 01.09.23", fontSize = 18.sp, color = Color.White, fontWeight = FontWeight(600))
+            Text(text = "Arrival: ${formatDate(arrivalDate)}",
+                fontSize = 18.sp, color = Color.White, fontWeight = FontWeight(600))
 
             Spacer(modifier = Modifier
                 .height(15.dp))
 
-            Text(text = "Leaving: 01.02.24",
+            Text(text = "Leaving: ${formatDate(leavingDate)}",
                 fontSize = 18.sp,
                 color = Color.White,
                 fontWeight = FontWeight(600))
@@ -142,13 +169,13 @@ fun DashboardData() {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ToDoDisplay(state: StateFlow<ActiveUserState>) {
+fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 
 Column (
 
 ) {
     Row {
-        Text(text = "Hey ${state.value.activeUser?.userName}", fontSize = 22.sp)
+        Text(text = "Hey ${active_user_state.value.activeUser?.userName}", fontSize = 22.sp)
 
     }
     Row {
@@ -179,14 +206,12 @@ fun Carousel() {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // First column with two cards stacked
                 StackedCards()
             }
 
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // Second column with two cards stacked
                 StackedCards()
             }
         }
@@ -207,7 +232,7 @@ fun StackedCards() {
             modifier = Modifier.padding(16.dp)
         ) {
 
-            Text(text = "1. Card Content")
+            Text(text = "Important Sentences")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Additional Content")
         }
@@ -227,7 +252,7 @@ fun StackedCards() {
             modifier = Modifier.padding(16.dp)
         ) {
             // Add your card content here
-            Text(text = "2. Card Content")
+            Text(text = "Sightseeing To DO")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Additional Content")
         }

@@ -1,6 +1,5 @@
-package be.mariovonbassen.citindi.ui.states
+package be.mariovonbassen.citindi.ui.states.ActiveStates
 
-import be.mariovonbassen.citindi.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,6 +10,5 @@ object GlobalActiveUserState {
     fun updateAppState(newState: ActiveUserState) {
         _activeState.value = newState
     }
-
 
 }
