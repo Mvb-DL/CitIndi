@@ -14,5 +14,6 @@ data class AddCityState(
     val gpsPosition: String = "",
     val country: String = "",
     val isAddingSuccessful: Boolean = false,
-    val userCities: List<City> = emptyList()
+    val userCities: List<City> = emptyList(),
+    val updatedActiveCity: Boolean = false
 )

@@ -8,6 +8,7 @@ sealed interface AddCityEvent{
     data class SetLeavingDate(val leavingDate: Date): AddCityEvent
     data class SetGpsPosition(val gpsPosition: String): AddCityEvent
     data class SetCountry(val country: String): AddCityEvent
+    data class UpdateActiveCity(val cityId: Int): AddCityEvent
     object SetSurfaceOpacity: AddCityEvent
     object SetOpenDateField: AddCityEvent
     object ScreenLoaded: AddCityEvent

@@ -94,7 +94,14 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController, currentRout
         }
 
         composable(route = NavigationRoutes.Authenticated.AddCityScreen.route){
-            AddCityScreen(navController = navController, currentRoute=currentRoute)
+            AddCityScreen(navController = navController, currentRoute=currentRoute,
+                onNavigateToAuthenticatedRoute = {
+                    navController.navigate(route = NavigationRoutes.Authenticated.NavigationRoute.route) {
+                        popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
+                            inclusive = true
+                        }
+                    }
+                })
         }
 
         composable(route = NavigationRoutes.Authenticated.ProfileScreen.route){

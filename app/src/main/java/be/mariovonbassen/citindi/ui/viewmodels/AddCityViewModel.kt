@@ -33,7 +33,6 @@ class AddCityViewModel(
 
     private val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
 
-
     fun onUserEvent(event: AddCityEvent) {
 
         when (event) {
@@ -115,6 +114,28 @@ class AddCityViewModel(
                     }
                 }
 
+            }
+
+            is AddCityEvent.UpdateActiveCity-> {
+
+                viewModelScope.launch {
+
+                    withContext(Dispatchers.IO) {
+
+                        val activeCity = cityRepository.getCityByCityId(event.cityId)
+
+                        val updatedCityState =
+                            ActiveCityState(activeCity = activeCity, isActive = true)
+
+                        GlobalActiveCityState.updateCityAppState(updatedCityState)
+
+                        _state.update {
+                            it.copy(updatedActiveCity = true)
+                        }
+
+                    }
+
+                }
             }
 
             is AddCityEvent.ConfirmAddCity-> {

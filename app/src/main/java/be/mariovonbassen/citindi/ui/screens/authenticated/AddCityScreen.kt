@@ -29,6 +29,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -78,7 +79,8 @@ import java.util.Locale
 
 
 @Composable
-fun AddCityScreen(navController: NavController, currentRoute : String) {
+fun AddCityScreen(navController: NavController, currentRoute : String,
+                  onNavigateToAuthenticatedRoute: () -> Unit) {
 
     val context = LocalContext.current
 
@@ -96,6 +98,12 @@ fun AddCityScreen(navController: NavController, currentRoute : String) {
     //when screen is loaded it loads the cities of the user!
     viewmodel.onUserEvent(AddCityEvent.ScreenLoaded)
     val userCities = state.userCities
+
+    if (state.updatedActiveCity) {
+        LaunchedEffect(key1 = true) {
+            onNavigateToAuthenticatedRoute.invoke()
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -119,7 +127,7 @@ fun AddCityScreen(navController: NavController, currentRoute : String) {
                 modifier = Modifier
             ) {
 
-                ExistingCityDisplay(userCities)
+                ExistingCityDisplay(userCities, viewmodel)
 
             }
 
@@ -137,7 +145,7 @@ fun AddCityScreen(navController: NavController, currentRoute : String) {
 }
 
 @Composable
-fun ExistingCityDisplay(userCities: List<City>){
+fun ExistingCityDisplay(userCities: List<City>, viewmodel: AddCityViewModel){
 
         Column(
             modifier = Modifier
@@ -147,19 +155,25 @@ fun ExistingCityDisplay(userCities: List<City>){
         ) {
             LazyRow {
                 items(userCities) { city ->
-                    StackedCardsAddCity(city)
+                    StackedCardsAddCity(city, viewmodel)
                 }
             }
         }
 }
 
 @Composable
-fun StackedCardsAddCity(city: City) {
+fun StackedCardsAddCity(city: City, viewmodel: AddCityViewModel) {
+
+    //change active city on card click
+
     Card(
         modifier = Modifier
             .width(100.dp)
             .padding(8.dp)
-            .fillMaxHeight(0.2f),
+            .fillMaxHeight(0.2f)
+            .clickable(onClick = {
+                viewmodel.onUserEvent(AddCityEvent.UpdateActiveCity(city.cityId))
+            }),
 
         ) {
 
