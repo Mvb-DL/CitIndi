@@ -67,6 +67,10 @@ fun SettingsScreen(navController: NavController, currentRoute: String,
         LaunchedEffect(key1 = true) {
             onNavigateToUnauthenticatedRoute.invoke()
         }
+    } else if (state.isDeleteUserSuccessfull){
+        LaunchedEffect(key1 = true) {
+            onNavigateToUnauthenticatedRoute.invoke()
+        }
     }
 
     Surface(
@@ -141,8 +145,6 @@ fun SettingsButton(navController: NavController, viewmodel: SettingsViewModel) {
             Button(
                 onClick = {
                     viewmodel.onUserEvent(SettingsEvent.ConfirmDeleteUser)
-                    //bedingung
-                    navController.navigate(NavigationRoutes.Unauthenticated.LoginScreen.route)
                 }, modifier = Modifier
                     .width(200.dp),
                 shape = RoundedCornerShape(5.dp),
@@ -200,7 +202,6 @@ fun SettingsButton(navController: NavController, viewmodel: SettingsViewModel) {
                         .size(35.dp)
                 )
             }
-
         }
 
         Spacer(
@@ -213,7 +214,5 @@ fun SettingsButton(navController: NavController, viewmodel: SettingsViewModel) {
         ) {
             HomeButton(navController = navController)
         }
-
-
     }
 }

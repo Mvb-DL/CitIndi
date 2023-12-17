@@ -98,6 +98,7 @@ class SignUpViewModel(
 
                         GlobalActiveUserState.updateAppState(updatedState)
 
+                        //reset activeCity!
                         val updatedCityState = ActiveCityState(activeCity = null, isActive = false)
 
                         GlobalActiveCityState.updateCityAppState(updatedCityState)

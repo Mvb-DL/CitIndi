@@ -110,8 +110,6 @@ fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
 
                     Row {
 
-
-
                     Text(
                         modifier = Modifier
                             .padding(10.dp, 20.dp, 0.dp, 0.dp),
@@ -171,19 +169,24 @@ fun DashboardData(arrivalDate: Date, leavingDate: Date) {
 @Composable
 fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 
-Column (
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+    ) {
+        Column(
 
-) {
-    Row {
-        Text(text = "Hey ${active_user_state.value.activeUser?.userName}", fontSize = 22.sp)
+        ) {
+            Row {
+                Text(text = "Hey ${active_user_state.value.activeUser?.userName}", fontSize = 26.sp)
 
+            }
+            Row {
+                Text(text = "your plan of the day...", fontSize = 16.sp)
+            }
+
+        }
     }
-    Row {
-        Text(text = "your plan of the day...", fontSize = 16.sp)
-    }
-
-}
-
 }
 
 @Composable

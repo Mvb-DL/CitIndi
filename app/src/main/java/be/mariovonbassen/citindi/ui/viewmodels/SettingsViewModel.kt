@@ -27,8 +27,8 @@ class SettingsViewModel(
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
-    var globalActiveUserState: StateFlow<ActiveUserState>? = GlobalActiveUserState.activeState
-    var globalActiveCityState: StateFlow<ActiveCityState>? = GlobalActiveCityState.activeState
+    private var globalActiveUserState: StateFlow<ActiveUserState>? = GlobalActiveUserState.activeState
+    private var globalActiveCityState: StateFlow<ActiveCityState>? = GlobalActiveCityState.activeState
 
     fun onUserEvent(event: SettingsEvent) {
 
@@ -45,6 +45,12 @@ class SettingsViewModel(
                             val user = userRepository.getUser(globalActiveUserState?.value?.activeUser!!.userId)
 
                             userRepository.deleteUser(user)
+
+                            _state.update {
+                                it.copy(
+                                    isDeleteUserSuccessfull = true
+                                )
+                            }
                         }
 
                     }else{
