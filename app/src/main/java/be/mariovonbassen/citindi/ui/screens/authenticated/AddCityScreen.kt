@@ -1,6 +1,13 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,8 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -35,6 +44,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.ButtonDefaults
@@ -52,11 +62,18 @@ import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Dialog
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.AddCityEvent
@@ -68,14 +85,11 @@ import be.mariovonbassen.citindi.ui.components.Header
 import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideAddCityViewModel
 import be.mariovonbassen.citindi.ui.states.AddCityState
-import be.mariovonbassen.citindi.ui.theme.lightGray
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.util.Calendar
+import coil.compose.rememberImagePainter
+import uriToByteArray
 import java.util.Date
-import java.util.Locale
+
 
 
 @Composable
@@ -137,7 +151,7 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
                 modifier = Modifier
             ) {
 
-                AddCityForm(viewmodel = viewmodel, state = state)
+                AddCityForm(viewmodel = viewmodel, state = state, context)
 
             }
         }
@@ -196,7 +210,7 @@ fun StackedCardsAddCity(city: City, viewmodel: AddCityViewModel) {
 
 
 @Composable
-fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
+fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState, context: Context) {
 
     val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
@@ -233,7 +247,7 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        ImageUploadField()
+        ImageUploader(viewmodel, state)
 
         Spacer(modifier = Modifier.height(20.dp))
         
@@ -264,10 +278,10 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
         TextField(
             modifier = Modifier
                 .width(200.dp)
-                    .onFocusChanged {
-                       // viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
-                       // viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
-            },
+                .onFocusChanged {
+                    // viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
+                    // viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
+                },
                 label = { Text(text = "Add Arrival/Leaving date") },
                 value = "",
                 onValueChange = {
@@ -364,73 +378,60 @@ fun DatePickerField(viewmodel: AddCityViewModel) {
 
 
 @Composable
-fun ImageUploadField(){
+fun ImageUploader(viewmodel: AddCityViewModel, state: AddCityState) {
 
-    val color = Color(android.graphics.Color.parseColor(lightGray))
+    var showImage by remember { mutableStateOf(false) }
 
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
 
-    //The URI of the photo that the user has picked
-    var photoUri: Uri? by remember { mutableStateOf(null) }
+        if (uri != null) {
+            viewmodel.onUserEvent(AddCityEvent.SetUriImage(uri))
 
-    //The launcher we will use for the PickVisualMedia contract.
-    //When .launch()ed, this will display the photo picker.
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        //When the user has selected a photo, its URI is returned here
-        photoUri = uri
+        }
     }
 
-    Column(
-        modifier = Modifier
-            .width(250.dp)
-    ) {
+    Button(onClick = {
+        launcher.launch("image/*")
+        showImage = true
 
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = color
-            ),
+    }) {
+        Text("Upload Image")
+    }
 
-        ) {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = color),
-                onClick = {
-                    //On button press, launch the photo picker
-                    launcher.launch(
-                        PickVisualMediaRequest(
-                            //Here we request only photos. Change this to .ImageAndVideo if you want videos too.
-                            //Or use .VideoOnly if you only want videos.
-                            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                        )
-                    )
-                }
-            ) {
-                Text("Select Photo", color = Color.Black, fontSize = 20.sp)
-            }
-
-        }
-
-        if (photoUri != null) {
-            //Use Coil to display the selected image
-            val painter = rememberAsyncImagePainter(
-                ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(data = photoUri)
-                    .build()
-            )
-
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth()
-                    .border(6.0.dp, Color.Gray),
-                contentScale = ContentScale.Crop
-            )
-        }
+    if (showImage){
+        state.imageURI?.let { PreviewImage(uri = it, viewmodel) }
     }
 }
+
+
+@Composable
+fun PreviewImage(uri: Uri, viewmodel: AddCityViewModel){
+
+    val context = LocalContext.current
+
+    val painter: Painter = rememberAsyncImagePainter(
+        model = uri
+    )
+
+    LaunchedEffect(uri) {
+        val bytes = uriToByteArray(context, uri)
+        if (bytes != null){
+            viewmodel.onUserEvent(AddCityEvent.SetCityImage(bytes))
+        }
+    }
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = Modifier
+            .width(100.dp)
+            .height(100.dp)
+            .padding(16.dp),
+        contentScale = ContentScale.Fit
+    )
+
+}
+
+
 
 

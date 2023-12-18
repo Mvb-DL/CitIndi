@@ -1,5 +1,6 @@
 package be.mariovonbassen.citindi.ui
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +17,8 @@ import be.mariovonbassen.citindi.ui.viewmodels.SignUpViewModel
 
 
 class MainViewModelFactory(private val userRepository: UserRepository,
-                           private val cityRepository: CityRepository):
+                           private val cityRepository: CityRepository,
+):
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

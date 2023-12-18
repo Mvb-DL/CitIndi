@@ -16,7 +16,7 @@ import be.mariovonbassen.citindi.models.city.City
 
 @Database(
     entities = [User::class, City::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

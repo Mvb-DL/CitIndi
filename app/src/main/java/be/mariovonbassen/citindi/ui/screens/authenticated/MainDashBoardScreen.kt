@@ -1,26 +1,37 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -98,21 +109,28 @@ fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = color)
-            //.height(250.dp)
+            .defaultMinSize(minHeight = 120.dp)
+            .background(color = color),
+
     ) {
-        Column(
-            modifier = Modifier
-                .padding(10.dp)
-        ) {
 
-                active_user_city_state.value.activeCity?.let {
+            active_user_city_state.value.activeCity?.let {
 
-                    Row {
+                ImageBitmapFromBytes(it.cityImage)
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+
+                Row(modifier = Modifier
+                    .background(color=color),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
                     Text(
                         modifier = Modifier
-                            .padding(10.dp, 20.dp, 0.dp, 0.dp),
+                            .padding(10.dp, 3.dp, 3.dp, 3.dp),
                         text = it.cityName,
                         fontSize = 25.sp,
                         fontWeight = FontWeight(600),
@@ -121,34 +139,44 @@ fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
 
                     Text(
                         modifier = Modifier
-                            .padding(10.dp, 20.dp, 0.dp, 0.dp),
-                        text = "(${it.country})",
+                            .padding(0.dp, 3.dp, 10.dp, 3.dp),
+                        text = "${it.country}",
                         fontSize = 15.sp,
                         fontWeight = FontWeight(600),
                         color = Color.White
                     )
-                    }
 
-                    Spacer(modifier = Modifier.height(26.dp))
-
-                    DashboardData(arrivalDate = it.arrivalDate, leavingDate = it.leavingDate)
                 }
+
+                Spacer(modifier = Modifier.height(26.dp))
+
+                DashboardData(arrivalDate = it.arrivalDate, leavingDate = it.leavingDate)
+            }
         }
     }
 }
+@Composable
+fun ImageBitmapFromBytes(byteArray: ByteArray){
+
+    val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    val imageBitmap: ImageBitmap = bitmap.asImageBitmap()
+
+    Image(modifier = Modifier
+            .fillMaxSize(),
+        bitmap = imageBitmap,
+        contentDescription = "City Image",
+        contentScale= ContentScale.FillBounds)
+
+}
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun DashboardData(arrivalDate: Date, leavingDate: Date) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp, 0.dp, 10.dp, 0.dp)
-    ) {
-
         Row (
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
+                .padding(0.dp,0.dp,0.dp, 10.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(text = "Arrival: ${formatDate(arrivalDate)}",
@@ -162,7 +190,7 @@ fun DashboardData(arrivalDate: Date, leavingDate: Date) {
                 color = Color.White,
                 fontWeight = FontWeight(600))
         }
-    }
+
 }
 
 @SuppressLint("StateFlowValueCalledInComposition")

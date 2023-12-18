@@ -14,6 +14,7 @@ data class City (
     val leavingDate: Date,
     val gpsPosition: String,
     val country: String,
+    val cityImage: ByteArray,
     @PrimaryKey(autoGenerate = true)
     val cityId: Int = 0,
 )

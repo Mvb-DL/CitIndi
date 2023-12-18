@@ -1,31 +1,36 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.database.repositories.CityRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
-import be.mariovonbassen.citindi.ui.states.AddCityState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.states.AddCityState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Paths
+
 
 class AddCityViewModel(
     private val cityRepository: CityRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddCityState())
@@ -88,6 +93,25 @@ class AddCityViewModel(
                 }
             }
 
+            is AddCityEvent.SetUriImage-> {
+
+                //transform uri to byteArray and save it in DB
+                _state.update {
+                    it.copy(imageURI = event.cityUri)
+                }
+
+            }
+
+            is AddCityEvent.SetCityImage-> {
+
+                _state.update {
+                    it.copy(cityImage = event.cityByteArray)
+                }
+
+
+
+            }
+
             is AddCityEvent.SetSurfaceOpacity-> {
 
                 if (state.value.surfaceOpacity == 1.0f) {
@@ -145,6 +169,7 @@ class AddCityViewModel(
                 val leavingDate = state.value.leavingDate
                 val gpsPosition = state.value.gpsPosition
                 val country = state.value.country
+                val cityImage = state.value.cityImage
                 val userId = globalActiveUserState.value.activeUser?.userId
 
                 //validate input
@@ -157,12 +182,14 @@ class AddCityViewModel(
 
                             val city = City(
                                 userId, cityName, arrivalDate,
-                                leavingDate, gpsPosition, country
+                                leavingDate, gpsPosition, country, cityImage
                             )
 
                             cityRepository.upsertCity(city)
 
                             val latestCity = cityRepository.getLatestCity(userId)
+
+                            Log.d("CITY", latestCity.toString())
 
                             val updatedCityState = ActiveCityState(activeCity = latestCity, isActive = true)
 
@@ -178,4 +205,5 @@ class AddCityViewModel(
             }
         }
     }
+
 }
