@@ -18,5 +18,9 @@ data class AddCityState(
     val imageURI: Uri? = null,
     val isAddingSuccessful: Boolean = false,
     val userCities: List<City> = emptyList(),
-    val updatedActiveCity: Boolean = false
+    val updatedActiveCity: Boolean = false,
+    val currentDate: Date = Date(),
+    val startDate: Long = currentDate.time,
+    val dayInMillies: Long = 24 * 60 * 60 * 1000,
+    val endDate: Long = startDate + dayInMillies
 )

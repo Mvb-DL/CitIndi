@@ -72,6 +72,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
@@ -145,13 +146,13 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
 
             }
 
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             Box(
                 modifier = Modifier
             ) {
 
-                AddCityForm(viewmodel = viewmodel, state = state, context)
+                AddCityForm(viewmodel = viewmodel, state = state)
 
             }
         }
@@ -178,39 +179,51 @@ fun ExistingCityDisplay(userCities: List<City>, viewmodel: AddCityViewModel){
 @Composable
 fun StackedCardsAddCity(city: City, viewmodel: AddCityViewModel) {
 
-    //change active city on card click
+    val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
     Card(
         modifier = Modifier
-            .width(100.dp)
+            .width(130.dp)
             .padding(8.dp)
-            .fillMaxHeight(0.2f)
+            .fillMaxHeight(0.15f)
             .clickable(onClick = {
                 viewmodel.onUserEvent(AddCityEvent.UpdateActiveCity(city.cityId))
             }),
 
         ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
 
-            Text(text = city.cityName, fontSize = 15.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                Text(text = formatDate(city.arrivalDate))
-                Text(text = formatDate(city.leavingDate))
-            }
-            Text(text = city.gpsPosition)
-            Text(text = city.country)
+        ImageBitmapFromBytes(byteArray = city.cityImage)
 
+        Column(
+            modifier = Modifier.padding(10.dp)
+        ) {
+
+            Text(modifier = Modifier
+                .background(color),
+                text = city.cityName, fontSize = 15.sp, fontWeight = FontWeight(600), color= Color.White)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text( modifier = Modifier
+                    .background(color), text = formatDate(city.arrivalDate), fontSize = 12.sp, color= Color.White)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(modifier = Modifier
+                .background(color), text = city.country, fontSize = 12.sp, color= Color.White)
+
+        }
         }
     }
 }
 
 
 @Composable
-fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState, context: Context) {
+fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
 
     val color = Color(android.graphics.Color.parseColor(blueAppColor))
 
@@ -305,7 +318,7 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
 
         if (state.openDateField){
 
-            DatePickerField(viewmodel= viewmodel)
+            DatePickerField(viewmodel= viewmodel, state)
 
         }
     }
@@ -314,7 +327,7 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField(viewmodel: AddCityViewModel) {
+fun DatePickerField(viewmodel: AddCityViewModel, state: AddCityState) {
 
     Dialog(onDismissRequest = { }) {
 
@@ -329,14 +342,9 @@ fun DatePickerField(viewmodel: AddCityViewModel) {
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                val currentDate = Date()
-                val startDate: Long = currentDate.time
-                val oneDayInMillis: Long = 24 * 60 * 60 * 1000
-                val endDate: Long = startDate + oneDayInMillis
-
                 val dateRangePickerState = rememberDateRangePickerState(
-                    initialSelectedStartDateMillis = startDate,
-                    initialSelectedEndDateMillis = endDate
+                    initialSelectedStartDateMillis = state.startDate,
+                    initialSelectedEndDateMillis = state.endDate
                 )
 
                 DateRangePicker(state = dateRangePickerState)
@@ -426,7 +434,7 @@ fun PreviewImage(uri: Uri, viewmodel: AddCityViewModel){
         modifier = Modifier
             .width(100.dp)
             .height(100.dp)
-            .padding(16.dp),
+            .padding(3.dp),
         contentScale = ContentScale.Fit
     )
 

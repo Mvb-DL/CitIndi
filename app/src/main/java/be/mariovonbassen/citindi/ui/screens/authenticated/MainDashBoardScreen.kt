@@ -49,6 +49,7 @@ import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.theme.grayShade
+import byteArrayToImage
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Date
 
@@ -140,7 +141,7 @@ fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
                     Text(
                         modifier = Modifier
                             .padding(0.dp, 3.dp, 10.dp, 3.dp),
-                        text = "${it.country}",
+                        text = it.country,
                         fontSize = 15.sp,
                         fontWeight = FontWeight(600),
                         color = Color.White
@@ -158,14 +159,20 @@ fun CenterField(active_user_city_state: StateFlow<ActiveCityState>) {
 @Composable
 fun ImageBitmapFromBytes(byteArray: ByteArray){
 
-    val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    val imageBitmap: ImageBitmap = bitmap.asImageBitmap()
+    if (byteArray != null && byteArray.isNotEmpty() ){
 
-    Image(modifier = Modifier
-            .fillMaxSize(),
-        bitmap = imageBitmap,
-        contentDescription = "City Image",
-        contentScale= ContentScale.FillBounds)
+        Log.d("=","?")
+
+        val imageBitmap = byteArrayToImage(byteArray)
+
+        Image(
+            modifier = Modifier
+                .fillMaxSize(),
+            bitmap = imageBitmap,
+            contentDescription = "City Image",
+            contentScale = ContentScale.FillBounds
+        )
+    }
 
 }
 

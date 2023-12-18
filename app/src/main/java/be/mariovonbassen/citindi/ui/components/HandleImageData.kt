@@ -1,6 +1,10 @@
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -29,4 +33,13 @@ suspend fun uriToByteArray(context: Context, uri: Uri): ByteArray? = withContext
     }
 
     byteArray
+}
+
+
+fun byteArrayToImage(byteArray: ByteArray): ImageBitmap {
+
+    val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    val imageBitmap: ImageBitmap = bitmap.asImageBitmap()
+
+    return imageBitmap
 }
