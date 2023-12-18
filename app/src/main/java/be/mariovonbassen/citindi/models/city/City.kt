@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import be.mariovonbassen.citindi.models.User
 import java.util.Date
 
+
 @Entity(tableName = "cities")
 data class City (
     val userId: Int,

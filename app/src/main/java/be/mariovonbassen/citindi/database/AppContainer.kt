@@ -18,7 +18,9 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
 
     override val cityRepository: CityRepository by lazy {
-        OfflineCityRepository(UserDatabase.getDatabase(context).cityDao())
+        OfflineCityRepository(
+            UserDatabase.getDatabase(context).cityDao(),
+            UserDatabase.getDatabase(context).citySentenceDao())
     }
 
 }

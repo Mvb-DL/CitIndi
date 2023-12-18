@@ -1,7 +1,10 @@
 package be.mariovonbassen.citindi.database.repositories
 
+import androidx.lifecycle.LiveData
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.relations.CityWithSentences
 
 interface CityRepository {
     suspend fun upsertCity(city: City)
@@ -9,4 +12,6 @@ interface CityRepository {
     suspend fun getCitiesByUserId(userId: Int): List<City>
     suspend fun getCityByCityId(cityId: Int): City
     suspend fun getLatestCity(userId: Int): City
+    suspend fun insertCitySentences(sentences: List<CitySentence>)
+    suspend fun getCitySentencesByCityId(cityId: Int): List<CitySentence>
 }

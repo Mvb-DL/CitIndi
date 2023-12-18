@@ -92,7 +92,6 @@ import uriToByteArray
 import java.util.Date
 
 
-
 @Composable
 fun AddCityScreen(navController: NavController, currentRoute : String,
                   onNavigateToAuthenticatedRoute: () -> Unit) {
@@ -100,7 +99,8 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
     val context = LocalContext.current
 
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val cityRepository = OfflineCityRepository(cityDao)
+    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
+    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -112,6 +112,7 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
 
     //when screen is loaded it loads the cities of the user!
     viewmodel.onUserEvent(AddCityEvent.ScreenLoaded)
+
     val userCities = state.userCities
 
     if (state.updatedActiveCity) {

@@ -1,9 +1,14 @@
 package be.mariovonbassen.citindi.database.repositories
 
+import androidx.lifecycle.LiveData
 import be.mariovonbassen.citindi.database.dao.CityDao
+import be.mariovonbassen.citindi.database.dao.CitySentenceDao
 import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.relations.CityWithSentences
 
-class OfflineCityRepository(private val cityDao: CityDao) : CityRepository  {
+class OfflineCityRepository(private val cityDao: CityDao,
+                            private val citySentenceDao: CitySentenceDao) : CityRepository  {
 
     override suspend fun upsertCity(city: City) = cityDao.upsertCity(city)
 
@@ -18,6 +23,12 @@ class OfflineCityRepository(private val cityDao: CityDao) : CityRepository  {
     override suspend fun getLatestCity(userId: Int): City {
         return cityDao.getLatestCity(userId)
     }
+    override suspend fun insertCitySentences(sentences: List<CitySentence>) {
+        citySentenceDao.insertCitySentences(sentences)
+    }
 
+    override suspend fun getCitySentencesByCityId(cityId: Int): List<CitySentence>{
+        return cityDao.getCitySentencesByCityId(cityId)
+    }
 
 }

@@ -1,36 +1,39 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -38,17 +41,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
-import be.mariovonbassen.citindi.database.events.AddCityEvent
+import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.Footer
 import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
+import be.mariovonbassen.citindi.ui.states.AddCityState
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import be.mariovonbassen.citindi.ui.theme.grayShade
+import be.mariovonbassen.citindi.ui.viewmodels.MainDashBoardViewModel
 import byteArrayToImage
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Date
@@ -60,7 +66,8 @@ fun MainDashBoardScreen(navController: NavController) {
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val cityRepository = OfflineCityRepository(cityDao)
+    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
+    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -70,7 +77,11 @@ fun MainDashBoardScreen(navController: NavController) {
 
     val active_user_state = viewmodel.globalActiveUserState
     val active_user_city_state = viewmodel.globalActiveCityState
+    val state by viewmodel.state.collectAsState()
 
+    viewmodel.onUserEvent(MainDashBoardEvent.IsMainDashboardLoaded)
+
+    val citySentences = state.citySentenceList
 
     Scaffold(
 
@@ -95,7 +106,7 @@ fun MainDashBoardScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                Carousel()
+                Carousel(viewmodel, state, citySentences)
 
             }
         }
@@ -161,8 +172,6 @@ fun ImageBitmapFromBytes(byteArray: ByteArray){
 
     if (byteArray != null && byteArray.isNotEmpty() ){
 
-        Log.d("=","?")
-
         val imageBitmap = byteArrayToImage(byteArray)
 
         Image(
@@ -182,8 +191,9 @@ fun ImageBitmapFromBytes(byteArray: ByteArray){
 fun DashboardData(arrivalDate: Date, leavingDate: Date) {
 
         Row (
-            modifier = Modifier.fillMaxSize()
-                .padding(0.dp,0.dp,0.dp, 10.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp, 0.dp, 0.dp, 10.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(text = "Arrival: ${formatDate(arrivalDate)}",
@@ -225,7 +235,7 @@ fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 }
 
 @Composable
-fun Carousel() {
+fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState, citySentences: List<CitySentence>) {
 
     val grayShade = Color(android.graphics.Color.parseColor(grayShade))
 
@@ -244,25 +254,26 @@ fun Carousel() {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                StackedCards()
+                StackedCards(state, viewmodel, citySentences)
             }
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                StackedCards()
-            }
         }
     }
 }
 
 @Composable
-fun StackedCards() {
+fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySentences: List<CitySentence>) {
+
+    var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(150.dp),
+            .height(150.dp)
+            .clickable(onClick = {
+                showDialog = true
+            }),
 
     ) {
         // Card content
@@ -272,7 +283,15 @@ fun StackedCards() {
 
             Text(text = "Important Sentences")
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Additional Content")
+            LazyRow {
+                items(citySentences) { citySentence ->
+                    Text(text = citySentence.citySentence)
+                }
+            }
+
+            if (showDialog){
+                AddCitySentence(state = state, viewmodel = viewmodel)
+            }
         }
     }
 
@@ -295,7 +314,34 @@ fun StackedCards() {
             Text(text = "Additional Content")
         }
     }
+
+
 }
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel){
 
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        TextField(
+
+        label = { },
+        modifier = Modifier
+            .width(250.dp),
+        value = state.citySentence,
+        onValueChange = {
+            viewmodel.onUserEvent(
+                MainDashBoardEvent.SetCitySentence(it)
+            )
+        })
+
+        Button(onClick = {
+                viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence)
+        }) {
+            Text("Add")
+        }
+    }
+}

@@ -1,7 +1,10 @@
 package be.mariovonbassen.citindi.ui.states
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.relations.CityWithSentences
 import java.time.LocalDate
 import java.util.Date
 
@@ -17,10 +20,14 @@ data class AddCityState(
     val cityImage: ByteArray = ByteArray(0),
     val imageURI: Uri? = null,
     val isAddingSuccessful: Boolean = false,
+    //to LiveData
     val userCities: List<City> = emptyList(),
     val updatedActiveCity: Boolean = false,
     val currentDate: Date = Date(),
     val startDate: Long = currentDate.time,
     val dayInMillies: Long = 24 * 60 * 60 * 1000,
-    val endDate: Long = startDate + dayInMillies
+    val endDate: Long = startDate + dayInMillies,
+    val citySentence: String = "",
+    //to LiveData
+    val citySentenceList: List<CitySentence> = emptyList()
 )

@@ -9,14 +9,15 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import be.mariovonbassen.citindi.database.converters.Converters
 import be.mariovonbassen.citindi.database.dao.CityDao
+import be.mariovonbassen.citindi.database.dao.CitySentenceDao
 import be.mariovonbassen.citindi.database.dao.UserDao
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.models.city.City
-
+import be.mariovonbassen.citindi.models.city.CitySentence
 
 @Database(
-    entities = [User::class, City::class],
-    version = 7,
+    entities = [User::class, City::class, CitySentence::class],
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -24,13 +25,13 @@ abstract class UserDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun cityDao(): CityDao
+    abstract fun citySentenceDao(): CitySentenceDao
 
     companion object {
         @Volatile
         private var Instance: UserDatabase? = null
 
         fun getDatabase(context: Context): UserDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UserDatabase::class.java, "users")
                     .fallbackToDestructiveMigration()

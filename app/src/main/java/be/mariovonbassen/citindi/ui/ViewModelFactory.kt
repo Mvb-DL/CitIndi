@@ -34,7 +34,7 @@ class MainViewModelFactory(private val userRepository: UserRepository,
             return ProfileViewModel(userRepository) as T
         }else if (modelClass.isAssignableFrom(MainDashBoardViewModel::class.java)) {
 
-            return MainDashBoardViewModel(userRepository) as T
+            return MainDashBoardViewModel(cityRepository, userRepository) as T
         }else if (modelClass.isAssignableFrom(ChangeAccountViewModel::class.java)) {
 
             return ChangeAccountViewModel(userRepository) as T

@@ -54,7 +54,8 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val cityRepository = OfflineCityRepository(cityDao)
+    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
+    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
