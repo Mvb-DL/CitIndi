@@ -9,4 +9,5 @@ import androidx.annotation.StringRes
 enum class ErrorType {
     LOGIN_ERROR,
     REGISTRATION_ERROR,
+    ADDCITY_ERROR
 }

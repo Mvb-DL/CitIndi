@@ -5,11 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import be.mariovonbassen.citindi.database.converters.Converters
 import be.mariovonbassen.citindi.database.dao.CityDao
-import be.mariovonbassen.citindi.database.dao.CitySentenceDao
 import be.mariovonbassen.citindi.database.dao.UserDao
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.models.city.City
@@ -17,7 +14,7 @@ import be.mariovonbassen.citindi.models.city.CitySentence
 
 @Database(
     entities = [User::class, City::class, CitySentence::class],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,7 +22,6 @@ abstract class UserDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun cityDao(): CityDao
-    abstract fun citySentenceDao(): CitySentenceDao
 
     companion object {
         @Volatile

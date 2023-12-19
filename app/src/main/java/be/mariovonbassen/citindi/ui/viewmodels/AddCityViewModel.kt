@@ -2,16 +2,21 @@ package be.mariovonbassen.citindi.ui.viewmodels
 
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.database.repositories.CityRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.ui.components.ErrorType
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
+import be.mariovonbassen.citindi.ui.states.AddCityErrorState
 import be.mariovonbassen.citindi.ui.states.AddCityState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +29,7 @@ import java.io.InputStream
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Date
 
 
 class AddCityViewModel(
@@ -34,7 +40,31 @@ class AddCityViewModel(
     private val _state = MutableStateFlow(AddCityState())
     val state: StateFlow<AddCityState> = _state.asStateFlow()
 
+    private var _userCityList = MutableLiveData<List<City>>(state.value.userCities)
+    var userCityList: LiveData<List<City>> = _userCityList
+
+    private val _errorState = MutableStateFlow(AddCityErrorState())
+    val errorState: StateFlow<AddCityErrorState> = _errorState.asStateFlow()
+
     private val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState
+    val userId = globalActiveUserState.value.activeUser?.userId
+
+    init {
+
+        if (userId != null) {
+            loadData(userId)
+        }
+    }
+
+    private fun loadData(userId: Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val userCities = cityRepository.getCitiesByUserId(userId)
+                _userCityList.postValue(userCities)
+
+            }
+        }
+    }
 
     fun onUserEvent(event: AddCityEvent) {
 
@@ -42,23 +72,7 @@ class AddCityViewModel(
 
             is AddCityEvent.ScreenLoaded -> {
 
-                viewModelScope.launch {
 
-                    withContext(Dispatchers.IO) {
-
-                        val userId = globalActiveUserState.value.activeUser?.userId
-
-                        if (userId != null) {
-
-                            val userCities = cityRepository.getCitiesByUserId(userId)
-
-                            _state.update {
-                                it.copy(userCities = userCities)
-                            }
-                        }
-
-                    }
-                }
             }
 
             is AddCityEvent.SetCityName-> {
@@ -93,7 +107,6 @@ class AddCityViewModel(
 
             is AddCityEvent.SetUriImage-> {
 
-                //transform uri to byteArray and save it in DB
                 _state.update {
                     it.copy(imageURI = event.cityUri)
                 }
@@ -105,8 +118,6 @@ class AddCityViewModel(
                 _state.update {
                     it.copy(cityImage = event.cityByteArray)
                 }
-
-
 
             }
 
@@ -135,7 +146,6 @@ class AddCityViewModel(
                         it.copy(openDateField = true)
                     }
                 }
-
             }
 
             is AddCityEvent.UpdateActiveCity-> {
@@ -156,7 +166,6 @@ class AddCityViewModel(
                         }
 
                     }
-
                 }
             }
 
@@ -170,38 +179,111 @@ class AddCityViewModel(
                 val cityImage = state.value.cityImage
                 val userId = globalActiveUserState.value.activeUser?.userId
 
-                //validate input
+                val validatedAddCityInput = validateAddCityInputs()
 
-                viewModelScope.launch {
+                if (validatedAddCityInput && userId != null) {
 
-                    if (userId != null) {
+                    suspend fun addCity(
+                        cityName: String,
+                        arrivalDate: Date, leavingDate: Date,
+                        gpsPosition: String, country: String,
+                        cityImage: ByteArray, userId: Int
+                    ) {
+                        val city = City(
+                            userId, cityName, arrivalDate,
+                            leavingDate, gpsPosition, country, cityImage
+                        )
+                        cityRepository.upsertCity(city)
+                        val userCities = cityRepository.getCitiesByUserId(userId)
+                        _userCityList.postValue(userCities)
+                    }
+
+                    viewModelScope.launch {
 
                         withContext(Dispatchers.IO) {
 
-                            val city = City(
-                                userId, cityName, arrivalDate,
-                                leavingDate, gpsPosition, country, cityImage
+                            addCity(
+                                cityName,
+                                arrivalDate,
+                                leavingDate,
+                                gpsPosition,
+                                country,
+                                cityImage,
+                                userId
                             )
-
-                            cityRepository.upsertCity(city)
 
                             val latestCity = cityRepository.getLatestCity(userId)
 
-                            Log.d("CITY", latestCity.toString())
-
-                            val updatedCityState = ActiveCityState(activeCity = latestCity, isActive = true)
+                            val updatedCityState =
+                                ActiveCityState(activeCity = latestCity, isActive = true)
 
                             GlobalActiveCityState.updateCityAppState(updatedCityState)
 
                             _state.update {
                                 it.copy(isAddingSuccessful = true)
                             }
-
                         }
                     }
-               }
+                }
             }
         }
     }
 
+    fun resetError(){
+        _errorState.update {
+            it.copy(isError = false)
+        }
+    }
+
+    private fun validateAddCityInputs(): Boolean {
+
+        val cityName = state.value.cityName.trim()
+        val country = state.value.country.trim()
+
+        return when {
+
+            cityName.isEmpty() -> {
+
+                if (errorState.value.errorType == ErrorType.ADDCITY_ERROR) {
+
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Cityname can´t be empty!"
+                        )
+                    }
+                }
+
+                false
+            }
+
+            country.isEmpty() -> {
+
+                if (errorState.value.errorType == ErrorType.ADDCITY_ERROR) {
+
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Country can´t be empty!"
+                        )
+                    }
+                }
+
+                false
+            }
+
+
+            else -> {
+
+                _errorState.update {
+                    it.copy(
+                        isError = false,
+                        errorMessage = ""
+                    )
+                }
+
+                true
+            }
+        }
+    }
 }

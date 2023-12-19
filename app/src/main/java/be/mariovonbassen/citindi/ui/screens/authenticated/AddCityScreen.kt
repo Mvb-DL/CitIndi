@@ -65,6 +65,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
@@ -81,7 +82,9 @@ import be.mariovonbassen.citindi.database.events.AddCityEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.models.city.City
+import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
+import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.components.Header
 import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideAddCityViewModel
@@ -99,8 +102,7 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
     val context = LocalContext.current
 
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
-    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
+    val cityRepository = OfflineCityRepository(cityDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -109,11 +111,9 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
     val viewmodel = provideAddCityViewModel(viewModelFactory)
 
     val state by viewmodel.state.collectAsState()
+    val errorstate by viewmodel.errorState.collectAsState()
+    val userCities: List<City> by viewmodel.userCityList.observeAsState(emptyList())
 
-    //when screen is loaded it loads the cities of the user!
-    viewmodel.onUserEvent(AddCityEvent.ScreenLoaded)
-
-    val userCities = state.userCities
 
     if (state.updatedActiveCity) {
         LaunchedEffect(key1 = true) {
@@ -152,6 +152,10 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
             Box(
                 modifier = Modifier
             ) {
+
+                if (errorstate.isError){
+                    AlertMessage(alertText = errorstate.errorMessage)
+                }
 
                 AddCityForm(viewmodel = viewmodel, state = state)
 
@@ -217,7 +221,7 @@ fun StackedCardsAddCity(city: City, viewmodel: AddCityViewModel) {
             Text(modifier = Modifier
                 .background(color), text = city.country, fontSize = 12.sp, color= Color.White)
 
-        }
+            }
         }
     }
 }

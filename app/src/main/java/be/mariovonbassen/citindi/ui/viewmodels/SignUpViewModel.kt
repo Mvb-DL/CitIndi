@@ -129,6 +129,34 @@ class SignUpViewModel(
 
         return when {
 
+            userName.length < 2 -> {
+
+                if (errorState.value.errorType == ErrorType.REGISTRATION_ERROR)
+                {
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Username is to short!"
+                        )
+                    }
+                }
+                false
+            }
+
+            userPassword.length < 8 -> {
+
+                if (errorState.value.errorType == ErrorType.REGISTRATION_ERROR)
+                {
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Password is to short!"
+                        )
+                    }
+                }
+                false
+            }
+
             userName.isEmpty() -> {
                 if (errorState.value.errorType == ErrorType.REGISTRATION_ERROR)
                     {

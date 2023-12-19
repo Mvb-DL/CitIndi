@@ -51,8 +51,7 @@ fun SignUpScreen(
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
-    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
+    val cityRepository = OfflineCityRepository(cityDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -79,7 +78,7 @@ fun SignUpScreen(
                 .padding(20.dp),
             onClick = { onNavigateToLogin.invoke() },
             style = TextStyle(
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 textDecoration = TextDecoration.Underline,
             )
         )
@@ -138,12 +137,11 @@ fun SignUpScreen(
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.5f)
                     .height(50.dp)
-                    .width(50.dp)
 
             ) {
-                Text(text = "Sign Up", fontSize = 20.sp)
+                Text(text = "Sign Up")
             }
         }
 

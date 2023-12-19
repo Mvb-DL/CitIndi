@@ -1,10 +1,9 @@
 package be.mariovonbassen.citindi.database.repositories
 
-import androidx.lifecycle.LiveData
-import be.mariovonbassen.citindi.models.User
+
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.models.city.CitySentence
-import be.mariovonbassen.citindi.models.city.relations.CityWithSentences
+
 
 interface CityRepository {
     suspend fun upsertCity(city: City)

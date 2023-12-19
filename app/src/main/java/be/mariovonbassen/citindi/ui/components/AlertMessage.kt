@@ -14,7 +14,9 @@ import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
+import be.mariovonbassen.citindi.ui.provideAddCityViewModel
 import be.mariovonbassen.citindi.ui.provideLoginViewModel
+import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.provideSignUpViewModel
 import be.mariovonbassen.citindi.ui.theme.alarmRed
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
@@ -31,8 +33,7 @@ fun AlertMessage(alertText: String) {
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
-    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
+    val cityRepository = OfflineCityRepository(cityDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -41,6 +42,8 @@ fun AlertMessage(alertText: String) {
 
     val loginViewmodel = provideLoginViewModel(viewModelFactory)
     val signupViewmodel = provideSignUpViewModel(viewModelFactory)
+    val mainDashBoardViewmodel = provideMainDashBoardViewModel(viewModelFactory)
+    val addCityViewModel = provideAddCityViewModel(viewModelFactory)
 
     val showDialog by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
@@ -60,6 +63,8 @@ fun AlertMessage(alertText: String) {
                 delay(2000)
                 loginViewmodel.resetError()
                 signupViewmodel.resetError()
+                mainDashBoardViewmodel.resetError()
+                addCityViewModel.resetError()
             }
         }
 }

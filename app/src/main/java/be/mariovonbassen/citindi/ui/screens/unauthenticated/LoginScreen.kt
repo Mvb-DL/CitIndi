@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,7 +31,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.LoginUserEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
@@ -41,21 +38,16 @@ import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.provideLoginViewModel
-import be.mariovonbassen.citindi.ui.provideSignUpViewModel
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
-import be.mariovonbassen.citindi.ui.viewmodels.LoginViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onNavigateToRegistration: () -> Unit,
-                onNavigateToForgotPassword: () -> Unit,
                 onNavigateToAuthenticatedRoute: () -> Unit) {
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
-    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
+    val cityRepository = OfflineCityRepository(cityDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -81,7 +73,7 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
                 .padding(20.dp),
             onClick = { onNavigateToRegistration.invoke() },
             style = TextStyle(
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 textDecoration = TextDecoration.Underline,
             )
         )
@@ -115,7 +107,7 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { viewmodel.onUserEvent(LoginUserEvent.SetPassword(it)) })
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
@@ -125,9 +117,9 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = color),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.5f)
                     .height(50.dp)
-                    .width(50.dp)
+
             ) {
                 Text(text = "Login")
             }
@@ -135,14 +127,5 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        ClickableText(
-            text = AnnotatedString("Forgot password?"),
-            onClick = {
-                onNavigateToForgotPassword.invoke()
-            },
-            style = TextStyle(
-                fontSize = 14.sp,
-            )
-        )
     }
 }

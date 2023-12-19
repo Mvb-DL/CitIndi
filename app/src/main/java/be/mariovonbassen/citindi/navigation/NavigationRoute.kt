@@ -16,7 +16,6 @@ sealed class NavigationRoutes{
         object NavigationRoute : Unauthenticated(route = "unauthenticated")
         object LoginScreen : Unauthenticated("login_screen")
         object SignUpScreen : Unauthenticated("signup_screen")
-        object ResetPasswordScreen : Unauthenticated("reset_password_screen")
 
     }
 

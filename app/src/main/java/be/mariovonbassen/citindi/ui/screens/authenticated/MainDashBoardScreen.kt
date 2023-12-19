@@ -50,6 +50,7 @@ import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
+import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.components.Footer
 import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
@@ -70,8 +71,7 @@ fun MainDashBoardScreen(navController: NavController) {
 
     val context = LocalContext.current
     val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val citySentenceDao = UserDatabase.getDatabase(context).citySentenceDao()
-    val cityRepository = OfflineCityRepository(cityDao, citySentenceDao)
+    val cityRepository = OfflineCityRepository(cityDao)
 
     val userDao = UserDatabase.getDatabase(context).userDao()
     val userRepository = OfflineUserRepository(userDao)
@@ -83,10 +83,8 @@ fun MainDashBoardScreen(navController: NavController) {
     val active_user_city_state = viewmodel.globalActiveCityState
 
     val state by viewmodel.state.collectAsState()
-
+    val errorstate by viewmodel.errorState.collectAsState()
     val citySentences: List<CitySentence> by viewmodel.citySentenceList.observeAsState(emptyList())
-
-
 
     Scaffold(
 
@@ -103,6 +101,10 @@ fun MainDashBoardScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
+                if (errorstate.isError){
+                    AlertMessage(alertText = errorstate.errorMessage)
+                }
+
                 CenterField(active_user_city_state = active_user_city_state)
 
                 Spacer(modifier = Modifier.height(26.dp))
@@ -111,9 +113,7 @@ fun MainDashBoardScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                if (citySentences != null) {
-                    Carousel(viewmodel, state, citySentences)
-                }
+                Carousel(viewmodel, state, citySentences)
 
             }
         }
@@ -242,7 +242,8 @@ fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 }
 
 @Composable
-fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState, citySentences: List<CitySentence>) {
+fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState,
+             citySentences: List<CitySentence>) {
 
     val grayShade = Color(android.graphics.Color.parseColor(grayShade))
 
@@ -271,40 +272,53 @@ fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState, citySentenc
 @Composable
 fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySentences: List<CitySentence>) {
 
-    var showDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(150.dp)
+            .height(200.dp)
             .clickable(onClick = {
-                showDialog = true
+                viewmodel.onUserEvent(MainDashBoardEvent.showDialogCardClick(state.showDialog))
             }),
 
     ) {
-        // Card content
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
 
-            Text(text = "Important Sentences")
+            Box() {
 
-            Spacer(modifier = Modifier.height(8.dp))
-            
-                LazyRow {
-                    items(citySentences) { item ->
-                        Text(text = item.citySentence)
-                        Spacer(modifier = Modifier
-                            .height(5.dp))
+                Text(
+                    text = "Important Sentences",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500)
+                    )
+
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row {
+                    LazyColumn {
+                        items(citySentences) { item ->
+                            Text(text = item.citySentence)
+                            Spacer(
+                                modifier = Modifier
+                                    .height(5.dp)
+                            )
+                        }
                     }
                 }
 
-            Text(text = state.citySentence)
-
-            if (showDialog){
-                AddCitySentence(state = state, viewmodel = viewmodel, citySentences)
+                if (state.showDialog) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        AddCitySentence(state, viewmodel, citySentences)
+                    }
+                }
             }
+
         }
     }
 
@@ -314,7 +328,6 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(150.dp),
 
         ) {
 
@@ -322,7 +335,7 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
             modifier = Modifier.padding(16.dp)
         ) {
             // Add your card content here
-            Text(text = "Sightseeing To DO")
+            Text(text = "Sightseeing ToDo", fontSize = 18.sp, fontWeight = FontWeight(500))
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Additional Content")
         }
@@ -334,17 +347,15 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel, citySentences: List<CitySentence>){
+fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel,
+                    citySentences: List<CitySentence>){
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ){
 
         TextField(
-
         label = { },
         modifier = Modifier
-            .width(250.dp),
+            .width(250.dp)
+            .height(50.dp),
         value = state.citySentence,
         onValueChange = {
             viewmodel.onUserEvent(
@@ -354,8 +365,8 @@ fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel, city
 
         Button(onClick = {
                 viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence(citySentences))
+
         }) {
             Text("Add")
         }
-    }
 }
