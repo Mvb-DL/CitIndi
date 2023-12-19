@@ -27,7 +27,8 @@ data class AddCityState(
     val startDate: Long = currentDate.time,
     val dayInMillies: Long = 24 * 60 * 60 * 1000,
     val endDate: Long = startDate + dayInMillies,
+
+
     val citySentence: String = "",
-    //to LiveData
     val citySentenceList: List<CitySentence> = emptyList()
 )

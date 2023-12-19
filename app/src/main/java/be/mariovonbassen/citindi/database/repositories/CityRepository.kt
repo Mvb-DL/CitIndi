@@ -12,6 +12,6 @@ interface CityRepository {
     suspend fun getCitiesByUserId(userId: Int): List<City>
     suspend fun getCityByCityId(cityId: Int): City
     suspend fun getLatestCity(userId: Int): City
-    suspend fun insertCitySentences(sentences: List<CitySentence>)
-    suspend fun getCitySentencesByCityId(cityId: Int): List<CitySentence>
+    suspend fun insertCitySentence(citySentence: CitySentence)
+    suspend fun getCitySentencesForCity(cityId: Int): List<CitySentence>
 }

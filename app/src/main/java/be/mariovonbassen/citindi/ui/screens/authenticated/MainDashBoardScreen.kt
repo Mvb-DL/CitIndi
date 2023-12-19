@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.navigation.NavController
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
@@ -77,11 +81,12 @@ fun MainDashBoardScreen(navController: NavController) {
 
     val active_user_state = viewmodel.globalActiveUserState
     val active_user_city_state = viewmodel.globalActiveCityState
+
     val state by viewmodel.state.collectAsState()
 
-    viewmodel.onUserEvent(MainDashBoardEvent.IsMainDashboardLoaded)
+    val citySentences: List<CitySentence> by viewmodel.citySentenceList.observeAsState(emptyList())
 
-    val citySentences = state.citySentenceList
+
 
     Scaffold(
 
@@ -106,7 +111,9 @@ fun MainDashBoardScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                Carousel(viewmodel, state, citySentences)
+                if (citySentences != null) {
+                    Carousel(viewmodel, state, citySentences)
+                }
 
             }
         }
@@ -282,15 +289,21 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
         ) {
 
             Text(text = "Important Sentences")
+
             Spacer(modifier = Modifier.height(8.dp))
-            LazyRow {
-                items(citySentences) { citySentence ->
-                    Text(text = citySentence.citySentence)
+            
+                LazyRow {
+                    items(citySentences) { item ->
+                        Text(text = item.citySentence)
+                        Spacer(modifier = Modifier
+                            .height(5.dp))
+                    }
                 }
-            }
+
+            Text(text = state.citySentence)
 
             if (showDialog){
-                AddCitySentence(state = state, viewmodel = viewmodel)
+                AddCitySentence(state = state, viewmodel = viewmodel, citySentences)
             }
         }
     }
@@ -321,11 +334,12 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel){
+fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel, citySentences: List<CitySentence>){
 
     Row(
         verticalAlignment = Alignment.CenterVertically
     ){
+
         TextField(
 
         label = { },
@@ -339,7 +353,7 @@ fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel){
         })
 
         Button(onClick = {
-                viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence)
+                viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence(citySentences))
         }) {
             Text("Add")
         }

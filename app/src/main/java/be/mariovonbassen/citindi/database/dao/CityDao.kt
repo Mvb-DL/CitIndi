@@ -25,7 +25,8 @@ interface CityDao {
     fun getCityByCityId(cityId: Int): City
     @Query("SELECT * FROM cities WHERE userId = :userId ORDER BY cityId DESC LIMIT 1")
     suspend fun getLatestCity(userId: Int): City
-    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCitySentence(citySentence: CitySentence)
     @Query("SELECT * FROM sentences WHERE cityId = :cityId")
-    fun getCitySentencesByCityId(cityId: Int): List<CitySentence>
+    suspend fun getCitySentencesForCity(cityId: Int): List<CitySentence>
 }

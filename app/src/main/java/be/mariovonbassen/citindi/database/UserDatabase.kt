@@ -17,7 +17,7 @@ import be.mariovonbassen.citindi.models.city.CitySentence
 
 @Database(
     entities = [User::class, City::class, CitySentence::class],
-    version = 10,
+    version = 12,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

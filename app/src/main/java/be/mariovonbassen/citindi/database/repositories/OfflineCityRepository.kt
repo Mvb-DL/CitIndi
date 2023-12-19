@@ -23,12 +23,12 @@ class OfflineCityRepository(private val cityDao: CityDao,
     override suspend fun getLatestCity(userId: Int): City {
         return cityDao.getLatestCity(userId)
     }
-    override suspend fun insertCitySentences(sentences: List<CitySentence>) {
-        citySentenceDao.insertCitySentences(sentences)
+    override suspend fun insertCitySentence(citySentence: CitySentence) {
+        cityDao.insertCitySentence(citySentence)
     }
 
-    override suspend fun getCitySentencesByCityId(cityId: Int): List<CitySentence>{
-        return cityDao.getCitySentencesByCityId(cityId)
+    override suspend fun getCitySentencesForCity(cityId: Int): List<CitySentence> {
+        return cityDao.getCitySentencesForCity(cityId)
     }
 
 }

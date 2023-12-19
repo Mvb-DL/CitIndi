@@ -1,6 +1,8 @@
 package be.mariovonbassen.citindi.ui.viewmodels
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
@@ -33,6 +35,28 @@ class MainDashBoardViewModel(
     private val _state = MutableStateFlow(AddCityState())
     val state: StateFlow<AddCityState> = _state.asStateFlow()
 
+    private var _citySentenceList = MutableLiveData<List<CitySentence>>(state.value.citySentenceList)
+    var citySentenceList: LiveData<List<CitySentence>> = _citySentenceList
+
+    val cityId = globalActiveCityState.value.activeCity?.cityId
+
+    init {
+
+        if (cityId != null) {
+            loadData(cityId)
+        }
+    }
+
+    private fun loadData(cityId: Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val citySentences = cityRepository.getCitySentencesForCity(cityId)
+                _citySentenceList.postValue(citySentences)
+
+            }
+        }
+    }
+
     fun onUserEvent(event: MainDashBoardEvent) {
 
         when (event) {
@@ -40,61 +64,46 @@ class MainDashBoardViewModel(
             is MainDashBoardEvent.SetCitySentence -> {
 
                 _state.update {
-                    it.copy(citySentence = event.citySentence)
+                    it.copy(
+                        citySentence = event.citySentence
+                    )
                 }
+
 
             }
 
             is MainDashBoardEvent.ConfirmCitySentence -> {
 
+                suspend fun addCitySentence(cityId: Int, sentence: String) {
+                    val newCitySentence = CitySentence(cityId, sentence) // Assuming other attributes or IDs are handled accordingly
+                    cityRepository.insertCitySentence(newCitySentence)
+                    val citySentences = cityRepository.getCitySentencesForCity(cityId)
+                    _citySentenceList.value = citySentences
+                }
+
                 viewModelScope.launch {
 
-                    withContext(Dispatchers.IO) {
 
-                        val cityId = globalActiveCityState.value.activeCity?.cityId
-
-                        val citySentence = cityId?.let {
-                           listOf( CitySentence(
-                                cityId = it,
-                                citySentence = state.value.citySentence,
-                            )
-                           )
+                    if (state.value.citySentence != null) {
+                        if (cityId != null) {
+                            addCitySentence(cityId, state.value.citySentence)
                         }
-
-                        if (citySentence != null) {
-                            cityRepository.insertCitySentences(citySentence)
-                        }
-
-
-
                     }
-
                 }
 
             }
 
+
+
             is MainDashBoardEvent.IsMainDashboardLoaded -> {
 
-                viewModelScope.launch {
 
-                    withContext(Dispatchers.IO) {
-
-                        val cityId = globalActiveCityState.value.activeCity?.cityId
-
-                       if (cityId != null) {
-                            val test = cityRepository.getCitySentencesByCityId(cityId)
-                            _state.update {
-                                it.copy(citySentenceList = test)
-                            }
-                            }
-
-                        }
-
-                    }
             }
-
-            else -> {}
         }
 
     }
+
+
+
+
 }
