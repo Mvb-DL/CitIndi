@@ -296,11 +296,11 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
         TextField(
             modifier = Modifier
                 .width(200.dp)
-                .onFocusChanged {
-                    // viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
-                    // viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
+                .clickable {
+                    viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
+                    viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
                 },
-                label = { Text(text = "Add Arrival/Leaving date") },
+                label = { Text(text = "Arrival/Leaving date") },
                 value = "",
                 onValueChange = {
 
@@ -433,12 +433,13 @@ fun PreviewImage(uri: Uri, viewmodel: AddCityViewModel){
         }
     }
 
+
     Image(
         painter = painter,
         contentDescription = null,
         modifier = Modifier
-            .width(100.dp)
-            .height(100.dp)
+            .width(120.dp)
+            .height(120.dp)
             .padding(3.dp),
         contentScale = ContentScale.Fit
     )

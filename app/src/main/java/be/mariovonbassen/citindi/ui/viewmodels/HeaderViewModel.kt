@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
 import be.mariovonbassen.citindi.ui.states.HeaderState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ class HeaderViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(HeaderState())
     val state: StateFlow<HeaderState> = _state.asStateFlow()
+
 
     fun setCurrentRouteName(currentRoute: String){
 

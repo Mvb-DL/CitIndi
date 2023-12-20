@@ -65,19 +65,28 @@ fun DropDownMenu(existingRoutes: List<String>, navController: NavController) {
         )
     ) {
         existingRoutes.forEachIndexed { index, route ->
+
             DropdownMenuItem(onClick = {
                 selectedIndex = index
                 expanded = false
                 navController.navigate(route)
             },
-                text = { Text(text = route) })
+                text = { DropDownItem(route = route) })
         }
     }
 }
 
 
 
+@Composable
+fun DropDownItem(route: String){
 
+    if (route == "unauthenticated") {
+        Text(text = "Logout")
+    }else{
+        Text(text = "Home")
+    }
+}
 
 
 

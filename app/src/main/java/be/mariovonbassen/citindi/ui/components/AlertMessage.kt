@@ -15,6 +15,7 @@ import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.provideAddCityViewModel
+import be.mariovonbassen.citindi.ui.provideChangeAccountViewModel
 import be.mariovonbassen.citindi.ui.provideLoginViewModel
 import be.mariovonbassen.citindi.ui.provideMainDashBoardViewModel
 import be.mariovonbassen.citindi.ui.provideSignUpViewModel
@@ -44,6 +45,7 @@ fun AlertMessage(alertText: String) {
     val signupViewmodel = provideSignUpViewModel(viewModelFactory)
     val mainDashBoardViewmodel = provideMainDashBoardViewModel(viewModelFactory)
     val addCityViewModel = provideAddCityViewModel(viewModelFactory)
+    val changeAccountViewModel = provideChangeAccountViewModel(viewModelFactory)
 
     val showDialog by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
@@ -65,6 +67,7 @@ fun AlertMessage(alertText: String) {
                 signupViewmodel.resetError()
                 mainDashBoardViewmodel.resetError()
                 addCityViewModel.resetError()
+                changeAccountViewModel.resetError()
             }
         }
 }
