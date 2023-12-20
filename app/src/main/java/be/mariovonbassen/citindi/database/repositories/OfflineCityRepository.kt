@@ -3,6 +3,7 @@ package be.mariovonbassen.citindi.database.repositories
 import be.mariovonbassen.citindi.database.dao.CityDao
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.CitySightSeeing
 
 class OfflineCityRepository(private val cityDao: CityDao) : CityRepository  {
 
@@ -22,9 +23,14 @@ class OfflineCityRepository(private val cityDao: CityDao) : CityRepository  {
     override suspend fun insertCitySentence(citySentence: CitySentence) {
         cityDao.insertCitySentence(citySentence)
     }
-
     override suspend fun getCitySentencesForCity(cityId: Int): List<CitySentence> {
         return cityDao.getCitySentencesForCity(cityId)
+    }
+    override suspend fun insertCitySightSeeing(citySightSeeing: CitySightSeeing) {
+        cityDao.insertCitySightSeeing(citySightSeeing)
+    }
+    override suspend fun getCitySightSeeingForCity(cityId: Int): List<CitySightSeeing> {
+        return cityDao.getCitySightSeeingForCity(cityId)
     }
 
 }

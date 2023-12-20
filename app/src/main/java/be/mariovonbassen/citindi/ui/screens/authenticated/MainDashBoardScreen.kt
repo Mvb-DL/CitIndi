@@ -1,7 +1,6 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,25 +28,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import androidx.navigation.NavController
-import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
-import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
-import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.CitySightSeeing
+import be.mariovonbassen.citindi.ui.BuildRepositories
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.components.Footer
@@ -69,12 +60,7 @@ import java.util.Date
 @Composable
 fun MainDashBoardScreen(navController: NavController) {
 
-    val context = LocalContext.current
-    val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val cityRepository = OfflineCityRepository(cityDao)
-
-    val userDao = UserDatabase.getDatabase(context).userDao()
-    val userRepository = OfflineUserRepository(userDao)
+    val (userRepository, cityRepository) = BuildRepositories()
 
     val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideMainDashBoardViewModel(viewModelFactory)
@@ -85,6 +71,7 @@ fun MainDashBoardScreen(navController: NavController) {
     val state by viewmodel.state.collectAsState()
     val errorstate by viewmodel.errorState.collectAsState()
     val citySentences: List<CitySentence> by viewmodel.citySentenceList.observeAsState(emptyList())
+    val citySightSeeings: List<CitySightSeeing> by viewmodel.citySightSeeingList.observeAsState(emptyList())
 
     Scaffold(
 
@@ -113,7 +100,7 @@ fun MainDashBoardScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                Carousel(viewmodel, state, citySentences)
+                Carousel(viewmodel, state, citySentences, citySightSeeings)
 
             }
         }
@@ -243,7 +230,7 @@ fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 
 @Composable
 fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState,
-             citySentences: List<CitySentence>) {
+             citySentences: List<CitySentence>, citySightSeeings: List<CitySightSeeing>) {
 
     val grayShade = Color(android.graphics.Color.parseColor(grayShade))
 
@@ -262,7 +249,7 @@ fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState,
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                StackedCards(state, viewmodel, citySentences)
+                StackedCards(state, viewmodel, citySentences, citySightSeeings)
             }
 
         }
@@ -270,8 +257,9 @@ fun Carousel(viewmodel: MainDashBoardViewModel, state: AddCityState,
 }
 
 @Composable
-fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySentences: List<CitySentence>) {
-
+fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
+                 citySentences: List<CitySentence>,
+                 citySightSeeings: List<CitySightSeeing>) {
 
     Card(
         modifier = Modifier
@@ -328,20 +316,49 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .height(200.dp)
+            .clickable(onClick = {
+                viewmodel.onUserEvent(MainDashBoardEvent.showDialogSecondCardClick(state.showDialogSecondCard)
+                )
+            }),
 
         ) {
 
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Add your card content here
-            Text(text = "Sightseeing ToDo", fontSize = 18.sp, fontWeight = FontWeight(500))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Additional Content")
+            Box() {
+
+                Text(
+                    text = "Sight Seeing To Do",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row {
+                    LazyColumn {
+                        items(citySightSeeings) { item ->
+                            Text(text = item.citySightSeeing)
+                            Spacer(
+                                modifier = Modifier
+                                    .height(5.dp)
+                            )
+                        }
+                    }
+                }
+
+                if (state.showDialogSecondCard) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        AddCitySightSeeing(state, viewmodel, citySightSeeings)
+                    }
+                }
+            }
         }
     }
-
-
 }
 
 
@@ -349,7 +366,6 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel, citySen
 @Composable
 fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel,
                     citySentences: List<CitySentence>){
-
 
         TextField(
         label = { },
@@ -364,9 +380,35 @@ fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel,
         })
 
         Button(onClick = {
+
                 viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence(citySentences))
 
         }) {
             Text("Add")
         }
+}
+
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun AddCitySightSeeing(state: AddCityState, viewmodel: MainDashBoardViewModel,
+                       citySightSeeings: List<CitySightSeeing>){
+
+    TextField(
+        label = { },
+        modifier = Modifier
+            .width(250.dp)
+            .height(50.dp),
+        value = state.citySightSeeing,
+        onValueChange = {
+            viewmodel.onUserEvent(
+                MainDashBoardEvent.SetCitySightSeeing(it)
+            )
+        })
+
+    Button(onClick = {
+        viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySightSeeing(citySightSeeings))
+    }) {
+        Text("Add")
+    }
 }

@@ -35,6 +35,7 @@ import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.LoginUserEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
+import be.mariovonbassen.citindi.ui.BuildRepositories
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.AlertMessage
 import be.mariovonbassen.citindi.ui.provideLoginViewModel
@@ -45,12 +46,7 @@ import be.mariovonbassen.citindi.ui.theme.blueAppColor
 fun LoginScreen(onNavigateToRegistration: () -> Unit,
                 onNavigateToAuthenticatedRoute: () -> Unit) {
 
-    val context = LocalContext.current
-    val cityDao = UserDatabase.getDatabase(context).cityDao()
-    val cityRepository = OfflineCityRepository(cityDao)
-
-    val userDao = UserDatabase.getDatabase(context).userDao()
-    val userRepository = OfflineUserRepository(userDao)
+    val (userRepository, cityRepository) = BuildRepositories()
 
     val viewModelFactory = MainViewModelFactory(userRepository, cityRepository)
     val viewmodel = provideLoginViewModel(viewModelFactory)

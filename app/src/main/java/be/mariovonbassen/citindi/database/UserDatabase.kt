@@ -11,10 +11,11 @@ import be.mariovonbassen.citindi.database.dao.UserDao
 import be.mariovonbassen.citindi.models.User
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.CitySightSeeing
 
 @Database(
-    entities = [User::class, City::class, CitySentence::class],
-    version = 13,
+    entities = [User::class, City::class, CitySentence::class, CitySightSeeing::class],
+    version = 14,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

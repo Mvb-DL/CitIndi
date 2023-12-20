@@ -8,6 +8,7 @@ import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
 import be.mariovonbassen.citindi.database.repositories.CityRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.CitySightSeeing
 import be.mariovonbassen.citindi.ui.components.ErrorType
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
@@ -42,6 +43,9 @@ class MainDashBoardViewModel(
     private var _citySentenceList = MutableLiveData<List<CitySentence>>(state.value.citySentenceList)
     var citySentenceList: LiveData<List<CitySentence>> = _citySentenceList
 
+    private var _citySightSeeingList = MutableLiveData<List<CitySightSeeing>>(state.value.citySightSeeingList)
+    var citySightSeeingList: LiveData<List<CitySightSeeing>> = _citySightSeeingList
+
     val cityId = globalActiveCityState.value.activeCity?.cityId
 
     init {
@@ -52,10 +56,15 @@ class MainDashBoardViewModel(
     }
 
     private fun loadData(cityId: Int) {
+
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+
                 val citySentences = cityRepository.getCitySentencesForCity(cityId)
                 _citySentenceList.postValue(citySentences)
+
+                val citySightSeeings = cityRepository.getCitySightSeeingForCity(cityId)
+                _citySightSeeingList.postValue(citySightSeeings)
 
             }
         }
@@ -72,8 +81,15 @@ class MainDashBoardViewModel(
                         citySentence = event.citySentence
                     )
                 }
+            }
 
+            is MainDashBoardEvent.SetCitySightSeeing -> {
 
+                _state.update {
+                    it.copy(
+                        citySightSeeing = event.citySightSeeing
+                    )
+                }
             }
 
             is MainDashBoardEvent.showDialogCardClick -> {
@@ -81,6 +97,15 @@ class MainDashBoardViewModel(
                 _state.update {
                     it.copy(
                         showDialog = !event.showDialog
+                    )
+                }
+            }
+
+            is MainDashBoardEvent.showDialogSecondCardClick -> {
+
+                _state.update {
+                    it.copy(
+                        showDialogSecondCard = !event.showDialogSecondCard
                     )
                 }
             }
@@ -120,8 +145,40 @@ class MainDashBoardViewModel(
 
             }
 
-        }
+            is MainDashBoardEvent.ConfirmCitySightSeeing -> {
 
+                val validatedInput = validateSightSeeingCardInputs()
+
+                if (validatedInput) {
+
+                    suspend fun addCitySightSeeing(cityId: Int, sightSeeing: String) {
+                        val newCitySightSeeing = CitySightSeeing(cityId, sightSeeing)
+                        cityRepository.insertCitySightSeeing(newCitySightSeeing)
+                        val citySightSeeing = cityRepository.getCitySightSeeingForCity(cityId)
+                        _citySightSeeingList.value = citySightSeeing
+                    }
+
+                    viewModelScope.launch {
+
+                        if (cityId != null) {
+                            addCitySightSeeing(cityId, state.value.citySightSeeing)
+                        }
+
+                        _state.update {
+                            it.copy(
+                                showDialogSecondCard = false
+                            )
+                        }
+
+                        _state.update {
+                            it.copy(
+                                citySightSeeing = ""
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun resetError(){
@@ -143,7 +200,42 @@ class MainDashBoardViewModel(
                     _errorState.update {
                         it.copy(
                             isError = true,
-                            errorMessage = "Input for Sentence is empty!"
+                            errorMessage = "Sentence is empty!"
+                        )
+                    }
+                }
+
+                false
+            }
+
+            else -> {
+
+                _errorState.update {
+                    it.copy(
+                        isError = false,
+                        errorMessage = ""
+                    )
+                }
+
+                true
+            }
+        }
+    }
+
+    private fun validateSightSeeingCardInputs(): Boolean {
+
+        val citySightSeeing = state.value.citySightSeeing.trim()
+
+        return when {
+
+            citySightSeeing.isEmpty() -> {
+
+                if (errorState.value.errorType == ErrorType.ADDCITY_ERROR) {
+
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Sightseeing is empty!"
                         )
                     }
                 }

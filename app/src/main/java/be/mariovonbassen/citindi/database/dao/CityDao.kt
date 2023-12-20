@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.models.city.CitySentence
+import be.mariovonbassen.citindi.models.city.CitySightSeeing
 
 
 @Dao
@@ -26,4 +27,9 @@ interface CityDao {
     suspend fun insertCitySentence(citySentence: CitySentence)
     @Query("SELECT * FROM sentences WHERE cityId = :cityId")
     suspend fun getCitySentencesForCity(cityId: Int): List<CitySentence>
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCitySightSeeing(citySightSeeing: CitySightSeeing)
+    @Query("SELECT * FROM city_sightseeing WHERE cityId = :cityId")
+    suspend fun getCitySightSeeingForCity(cityId: Int): List<CitySightSeeing>
+
 }

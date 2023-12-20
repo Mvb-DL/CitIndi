@@ -2,10 +2,15 @@ package be.mariovonbassen.citindi.ui
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.repositories.CityRepository
+import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
+import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.database.repositories.UserRepository
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
 import be.mariovonbassen.citindi.ui.viewmodels.ChangeAccountViewModel
@@ -48,6 +53,22 @@ class MainViewModelFactory(private val userRepository: UserRepository,
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+data class Repositories(var userRepository: UserRepository, val cityRepository: CityRepository)
+
+@Composable
+fun BuildRepositories(): Repositories {
+
+    val context = LocalContext.current
+    val cityDao = UserDatabase.getDatabase(context).cityDao()
+    val cityRepository = OfflineCityRepository(cityDao)
+
+    val userDao = UserDatabase.getDatabase(context).userDao()
+    val userRepository = OfflineUserRepository(userDao)
+
+    return Repositories(userRepository, cityRepository)
+}
+
 
 @Composable
 fun provideSignUpViewModel(viewModelFactory: MainViewModelFactory): SignUpViewModel {
