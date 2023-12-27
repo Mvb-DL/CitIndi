@@ -15,6 +15,5 @@ sealed interface AddCityEvent{
     data class UpdateActiveCity(val cityId: Int): AddCityEvent
     object SetSurfaceOpacity: AddCityEvent
     object SetOpenDateField: AddCityEvent
-    object ScreenLoaded: AddCityEvent
     object ConfirmAddCity: AddCityEvent
 }

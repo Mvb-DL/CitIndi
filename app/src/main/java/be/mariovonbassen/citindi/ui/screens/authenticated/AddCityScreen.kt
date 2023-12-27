@@ -1,14 +1,8 @@
 package be.mariovonbassen.citindi.ui.screens.authenticated
 
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Bundle
-import android.os.ParcelFileDescriptor
 import android.util.Log
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,56 +27,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import be.mariovonbassen.citindi.ui.theme.blueAppColor
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.rememberDatePickerState
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
-import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
-import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.AddCityEvent
-import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
-import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
 import be.mariovonbassen.citindi.models.city.City
-import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.ui.BuildRepositories
 import be.mariovonbassen.citindi.ui.MainViewModelFactory
 import be.mariovonbassen.citindi.ui.components.AlertMessage
@@ -91,7 +69,6 @@ import be.mariovonbassen.citindi.ui.components.formatDate
 import be.mariovonbassen.citindi.ui.provideAddCityViewModel
 import be.mariovonbassen.citindi.ui.states.AddCityState
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
-import coil.compose.rememberImagePainter
 import uriToByteArray
 import java.util.Date
 
@@ -282,6 +259,7 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
 @Composable
 fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
 
+
     Row(
         modifier = Modifier
             .width(250.dp),
@@ -291,12 +269,14 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
         TextField(
             modifier = Modifier
                 .width(200.dp)
+                .onFocusChanged {}
                 .clickable {
                     viewmodel.onUserEvent(AddCityEvent.SetOpenDateField)
                     viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
                 },
+                enabled = false,
                 label = { Text(text = "Arrival/Leaving date") },
-                value = "",
+                value = formatDate(state.arrivalDate),
                 onValueChange = {
 
                 })

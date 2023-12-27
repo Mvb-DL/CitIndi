@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.mariovonbassen.citindi.database.events.SettingsEvent
 import be.mariovonbassen.citindi.database.repositories.UserRepository
-import be.mariovonbassen.citindi.ui.components.clearGlobalStates
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveCityState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.ActiveUserState
 import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveCityState

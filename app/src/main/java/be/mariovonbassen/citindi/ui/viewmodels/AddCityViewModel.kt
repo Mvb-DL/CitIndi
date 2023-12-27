@@ -70,11 +70,6 @@ class AddCityViewModel(
 
         when (event) {
 
-            is AddCityEvent.ScreenLoaded -> {
-
-
-            }
-
             is AddCityEvent.SetCityName-> {
                 _state.update {
                     it.copy(cityName = event.cityName)
