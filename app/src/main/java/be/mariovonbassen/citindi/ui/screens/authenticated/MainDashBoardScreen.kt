@@ -277,6 +277,8 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
 
             Box() {
 
+                Column {
+
                 Text(
                     text = "Important Sentences",
                     fontSize = 18.sp,
@@ -286,7 +288,6 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
                     LazyColumn {
                         items(citySentences) { item ->
                             Text(text = item.citySentence)
@@ -296,6 +297,7 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
                             )
                         }
                     }
+
                 }
 
                 if (state.showDialog) {
@@ -318,7 +320,8 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
             .padding(8.dp)
             .height(200.dp)
             .clickable(onClick = {
-                viewmodel.onUserEvent(MainDashBoardEvent.showDialogSecondCardClick(state.showDialogSecondCard)
+                viewmodel.onUserEvent(
+                    MainDashBoardEvent.showDialogSecondCardClick(state.showDialogSecondCard)
                 )
             }),
 
@@ -329,6 +332,8 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
         ) {
             Box() {
 
+                Column{
+
                 Text(
                     text = "Sight Seeing To Do",
                     fontSize = 18.sp,
@@ -337,7 +342,6 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row {
                     LazyColumn {
                         items(citySightSeeings) { item ->
                             Text(text = item.citySightSeeing)
@@ -347,6 +351,7 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
                             )
                         }
                     }
+
                 }
 
                 if (state.showDialogSecondCard) {

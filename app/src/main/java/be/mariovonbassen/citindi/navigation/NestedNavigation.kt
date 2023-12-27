@@ -14,8 +14,6 @@ import be.mariovonbassen.citindi.ui.screens.authenticated.SettingsScreen
 import be.mariovonbassen.citindi.ui.screens.unauthenticated.LoginScreen
 import be.mariovonbassen.citindi.ui.screens.unauthenticated.SignUpScreen
 
-//TODO popupToRoot
-//TODO foreign Keys
 
 fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
 

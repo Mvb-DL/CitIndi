@@ -59,11 +59,7 @@ fun SettingsScreen(navController: NavController, currentRoute: String,
 
     val state by viewmodel.state.collectAsState()
 
-    if (state.isLogoutSuccessfull) {
-        LaunchedEffect(key1 = true) {
-            onNavigateToUnauthenticatedRoute.invoke()
-        }
-    } else if (state.isDeleteUserSuccessfull){
+    if (state.isLogoutSuccessfull || state.isDeleteUserSuccessfull) {
         LaunchedEffect(key1 = true) {
             onNavigateToUnauthenticatedRoute.invoke()
         }

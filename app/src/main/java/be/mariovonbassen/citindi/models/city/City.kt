@@ -7,7 +7,12 @@ import be.mariovonbassen.citindi.models.User
 import java.util.Date
 
 
-@Entity(tableName = "cities")
+@Entity(tableName = "cities", foreignKeys = [ForeignKey(
+    entity = User::class,
+    parentColumns = ["userId"],
+    childColumns = ["userId"],
+    onDelete = ForeignKey.CASCADE
+)])
 data class City (
     val userId: Int,
     val cityName: String,

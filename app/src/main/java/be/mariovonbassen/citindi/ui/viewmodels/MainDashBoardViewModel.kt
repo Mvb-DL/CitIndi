@@ -208,6 +208,22 @@ class MainDashBoardViewModel(
                 false
             }
 
+            cityId == null -> {
+
+                if (errorState.value.errorType == ErrorType.ADDCITY_ERROR) {
+
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Please add a city first of all!"
+                        )
+                    }
+
+                }
+
+                false
+            }
+
             else -> {
 
                 _errorState.update {
@@ -238,6 +254,22 @@ class MainDashBoardViewModel(
                             errorMessage = "Sightseeing is empty!"
                         )
                     }
+                }
+
+                false
+            }
+
+            cityId == null -> {
+
+                if (errorState.value.errorType == ErrorType.ADDCITY_ERROR) {
+
+                    _errorState.update {
+                        it.copy(
+                            isError = true,
+                            errorMessage = "Please add a city first of all!"
+                        )
+                    }
+
                 }
 
                 false
