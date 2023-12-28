@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import be.mariovonbassen.citindi.R
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.LoginUserEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
@@ -63,7 +65,7 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
     
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
-            text = AnnotatedString("Sign up here"),
+            text = AnnotatedString(stringResource(id = R.string.sign_up_link)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
@@ -85,19 +87,19 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
             AlertMessage(alertText = errorstate.errorMessage)
         }
 
-        Text(text = "Login", style = TextStyle(fontSize = 40.sp))
+        Text(text = stringResource(id = R.string.login_headline), style = TextStyle(fontSize = 40.sp))
 
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Username") },
+            label = { Text(text = stringResource(id = R.string.username_textfield)) },
             value = state.userName,
             onValueChange = { viewmodel.onUserEvent(LoginUserEvent.SetUserName(it)) })
 
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Password") },
+            label = { Text(text = stringResource(id = R.string.password_textfield)) },
             value = state.userPassword,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -117,7 +119,7 @@ fun LoginScreen(onNavigateToRegistration: () -> Unit,
                     .height(50.dp)
 
             ) {
-                Text(text = "Login")
+                Text(text = stringResource(id = R.string.login_headline))
             }
         }
 

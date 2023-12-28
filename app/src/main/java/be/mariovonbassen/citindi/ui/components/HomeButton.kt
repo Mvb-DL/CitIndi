@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.R
 import be.mariovonbassen.citindi.navigation.NavigationRoutes
 
 @Composable
@@ -46,7 +48,7 @@ fun HomeButton(navController: NavController){
         }
         
         Row {
-            Text(text = "Go back home", fontSize = 15.sp)
+            Text(text = stringResource(id = R.string.back_home_button), fontSize = 15.sp)
         }
 
         

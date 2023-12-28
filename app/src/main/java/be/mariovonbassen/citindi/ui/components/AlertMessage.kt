@@ -1,5 +1,6 @@
 package be.mariovonbassen.citindi.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -28,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun AlertMessage(alertText: String) {
 

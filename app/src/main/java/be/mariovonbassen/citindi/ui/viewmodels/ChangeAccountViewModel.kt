@@ -69,7 +69,7 @@ class ChangeAccountViewModel (
                             val newUserPassword = state.value.userPassword
 
                             //Check if data is empty and keep old state data
-                            if (newUserName != "" || newUserPassword != "") {
+                            if (newUserName.isNotEmpty() || newUserPassword.isNotEmpty()) {
 
                                 user.apply {
                                     userName = newUserName

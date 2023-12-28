@@ -32,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.R
 import be.mariovonbassen.citindi.database.events.MainDashBoardEvent
 import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.models.city.CitySightSeeing
@@ -221,7 +223,7 @@ fun ToDoDisplay(active_user_state: StateFlow<ActiveUserState>) {
 
             }
             Row {
-                Text(text = "your plan of the day...", fontSize = 16.sp)
+                Text(text = stringResource(id = R.string.plan_text), fontSize = 16.sp)
             }
 
         }
@@ -280,7 +282,7 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
                 Column {
 
                 Text(
-                    text = "Important Sentences",
+                    text = stringResource(id = R.string.sentences_headline),
                     fontSize = 18.sp,
                     fontWeight = FontWeight(500)
                     )
@@ -335,7 +337,7 @@ fun StackedCards(state: AddCityState, viewmodel: MainDashBoardViewModel,
                 Column{
 
                 Text(
-                    text = "Sight Seeing To Do",
+                    text = stringResource(id = R.string.sight_seeing_headline),
                     fontSize = 18.sp,
                     fontWeight = FontWeight(500)
                 )
@@ -389,7 +391,7 @@ fun AddCitySentence(state: AddCityState, viewmodel: MainDashBoardViewModel,
                 viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySentence(citySentences))
 
         }) {
-            Text("Add")
+            Text(stringResource(id = R.string.add_text))
         }
 }
 
@@ -414,6 +416,6 @@ fun AddCitySightSeeing(state: AddCityState, viewmodel: MainDashBoardViewModel,
     Button(onClick = {
         viewmodel.onUserEvent(MainDashBoardEvent.ConfirmCitySightSeeing(citySightSeeings))
     }) {
-        Text("Add")
+        Text(stringResource(id = R.string.add_text))
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import be.mariovonbassen.citindi.R
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.events.SignUpUserEvent
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
@@ -68,7 +70,7 @@ fun SignUpScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
-            text = AnnotatedString("Login here"),
+            text = AnnotatedString(stringResource(id = R.string.login_link)),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(20.dp),
@@ -90,12 +92,12 @@ fun SignUpScreen(
             AlertMessage(alertText = errorstate.errorMessage)
         }
 
-        Text(text = "Sign Up", style = TextStyle(fontSize = 40.sp))
+        Text(text = stringResource(id = R.string.sign_headline), style = TextStyle(fontSize = 40.sp))
 
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Enter your Username") },
+            label = { Text(text = stringResource(id = R.string.username_textfield)) },
             value = state.userName,
             onValueChange = {
                 viewmodel.onUserEvent(SignUpUserEvent.SetUserName(it))
@@ -104,7 +106,7 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Enter your Password") },
+            label = { Text(text = stringResource(id = R.string.password_textfield)) },
             value = state.userPassword,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -115,7 +117,7 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Repeat Password") },
+            label = { Text(text = stringResource(id = R.string.repeat_password_textfield)) },
             value = state.userPasswordConfirm,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -137,7 +139,7 @@ fun SignUpScreen(
                     .height(50.dp)
 
             ) {
-                Text(text = "Sign Up")
+                Text(text = stringResource(id = R.string.sign_headline))
             }
         }
 

@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
@@ -71,6 +72,7 @@ import be.mariovonbassen.citindi.ui.states.AddCityState
 import be.mariovonbassen.citindi.ui.viewmodels.AddCityViewModel
 import uriToByteArray
 import java.util.Date
+import be.mariovonbassen.citindi.R
 
 
 @Composable
@@ -212,7 +214,7 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
     ) {
 
         TextField(
-            label = { Text(text = "City Name") },
+            label = { Text(text = stringResource(id = R.string.city_name_form)) },
             modifier = Modifier
                 .width(250.dp),
             value = state.cityName,
@@ -227,7 +229,7 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-            label = { Text(text = "Country") },
+            label = { Text(text = stringResource(id = R.string.country_form)) },
             modifier = Modifier
                 .width(250.dp),
             value = state.country,
@@ -250,7 +252,7 @@ fun AddCityForm(viewmodel: AddCityViewModel, state: AddCityState) {
                 viewmodel.onUserEvent(AddCityEvent.ConfirmAddCity)
             }) {
                     
-            Text(text = "Add City", color = Color.White, fontSize = 20.sp)
+            Text(text = stringResource(id = R.string.add_city_button), color = Color.White, fontSize = 20.sp)
         }
     }
 }
@@ -275,7 +277,7 @@ fun DateField(viewmodel: AddCityViewModel, state: AddCityState){
                     viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
                 },
                 enabled = false,
-                label = { Text(text = "Arrival/Leaving date") },
+                label = { Text(text = stringResource(id = R.string.date_textfield)) },
                 value = formatDate(state.arrivalDate),
                 onValueChange = {
 
@@ -359,7 +361,7 @@ fun DatePickerField(viewmodel: AddCityViewModel, state: AddCityState) {
             viewmodel.onUserEvent(AddCityEvent.SetSurfaceOpacity)
 
         }) {
-            Text(text = "Add Date")
+            Text(text = stringResource(id = R.string.add_date_button))
         }
     }
 }
@@ -383,7 +385,7 @@ fun ImageUploader(viewmodel: AddCityViewModel, state: AddCityState) {
         showImage = true
 
     }) {
-        Text("Upload Image")
+        Text(stringResource(id = R.string.cta_image))
     }
 
     if (showImage){

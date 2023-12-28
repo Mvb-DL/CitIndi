@@ -35,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import be.mariovonbassen.citindi.R
 import be.mariovonbassen.citindi.database.UserDatabase
 import be.mariovonbassen.citindi.database.repositories.OfflineCityRepository
 import be.mariovonbassen.citindi.database.repositories.OfflineUserRepository
@@ -66,7 +68,6 @@ fun ProfileScreen(navController: NavController, currentRoute: String
 
     val state = viewmodel.globalActiveUserState
 
-
     Surface(
         modifier = Modifier
     ) {
@@ -83,34 +84,17 @@ fun ProfileScreen(navController: NavController, currentRoute: String
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "User ${state.value.activeUser?.userName}", fontSize = 35.sp)
+                Text(text = "Hey ${state.value.activeUser?.userName}", fontSize = 35.sp)
             }
-
 
         }
 
         Box(){
             ProfileButton(navController = navController)
         }
-
     }
 }
 
-
-@SuppressLint("StateFlowValueCalledInComposition")
-@Composable
-fun ProfileDataDisplay(viewmodel: SignUpViewModel){
-    
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Text(text = "Hey ${viewmodel.state.value.userName}")
-    }
-    
-}
 
 @Composable
 fun ProfileButton(navController: NavController) {
@@ -138,7 +122,7 @@ fun ProfileButton(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = color)
             ) {
 
-                Text(text = "Change Account")
+                Text(text = stringResource(id = R.string.change_account_button))
 
                 Spacer(
                     modifier = Modifier
@@ -166,6 +150,5 @@ fun ProfileButton(navController: NavController) {
         ) {
             HomeButton(navController = navController)
         }
-
     }
 }
