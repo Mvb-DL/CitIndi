@@ -36,10 +36,10 @@ class MainViewModelFactory(private val userRepository: UserRepository,
             return LoginViewModel(userRepository, cityRepository) as T
         } else if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
 
-            return ProfileViewModel(userRepository) as T
+            return ProfileViewModel() as T
         }else if (modelClass.isAssignableFrom(MainDashBoardViewModel::class.java)) {
 
-            return MainDashBoardViewModel(cityRepository, userRepository) as T
+            return MainDashBoardViewModel(cityRepository) as T
         }else if (modelClass.isAssignableFrom(ChangeAccountViewModel::class.java)) {
 
             return ChangeAccountViewModel(userRepository) as T
@@ -48,7 +48,7 @@ class MainViewModelFactory(private val userRepository: UserRepository,
             return SettingsViewModel(userRepository) as T
         } else if (modelClass.isAssignableFrom(AddCityViewModel::class.java)) {
 
-            return AddCityViewModel(cityRepository, userRepository) as T
+            return AddCityViewModel(cityRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

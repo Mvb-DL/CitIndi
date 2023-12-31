@@ -16,7 +16,6 @@ class HeaderViewModel : ViewModel() {
     private val _state = MutableStateFlow(HeaderState())
     val state: StateFlow<HeaderState> = _state.asStateFlow()
 
-
     fun setCurrentRouteName(currentRoute: String){
 
         if (currentRoute == "Add"){

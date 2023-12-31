@@ -105,7 +105,9 @@ fun AddCityScreen(navController: NavController, currentRoute : String,
                 .fillMaxSize()
         ) {
 
-            Box(){
+            Box(
+                modifier = Modifier
+            ){
 
                 Header(navController = navController, currentRoute=currentRoute)
 

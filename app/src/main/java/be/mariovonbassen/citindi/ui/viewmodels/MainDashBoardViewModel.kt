@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 
 class MainDashBoardViewModel(
     private val cityRepository: CityRepository,
-    private val userRepository: UserRepository
 ) : ViewModel() {
 
     val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState

@@ -7,7 +7,6 @@ import be.mariovonbassen.citindi.ui.states.ActiveStates.GlobalActiveUserState
 import kotlinx.coroutines.flow.StateFlow
 
 class ProfileViewModel(
-    private val userRepository: UserRepository
 ) : ViewModel() {
 
     val globalActiveUserState: StateFlow<ActiveUserState> = GlobalActiveUserState.activeState

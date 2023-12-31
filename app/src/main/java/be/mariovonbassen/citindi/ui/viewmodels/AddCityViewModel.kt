@@ -34,7 +34,6 @@ import java.util.Date
 
 class AddCityViewModel(
     private val cityRepository: CityRepository,
-    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddCityState())
