@@ -5,7 +5,6 @@ import be.mariovonbassen.citindi.models.city.City
 import be.mariovonbassen.citindi.models.city.CitySentence
 import be.mariovonbassen.citindi.models.city.CitySightSeeing
 
-
 interface CityRepository {
     suspend fun upsertCity(city: City)
     suspend fun deleteCity(city: City)
